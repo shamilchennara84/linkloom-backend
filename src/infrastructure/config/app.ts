@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 import cors from "cors";
 dotenv.config();
@@ -12,6 +13,8 @@ export const createServer = () => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(express.static(path.join(__dirname, "../public")));
+
+    app.use(cookieParser())
 
     app.use(
       cors({
@@ -28,3 +31,5 @@ export const createServer = () => {
     console.log(err.message);
   }
 };
+
+
