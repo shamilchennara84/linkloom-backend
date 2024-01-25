@@ -1,104 +1,74 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
-import { User } from "../../interfaces/schemaInterface";
+import { IUser } from "../../interfaces/Schema/userSchema";
+import { userAddressSchema } from "./subSchema/addressSchema";
+import { emailSchema } from "./base/emailSchema";
+import { mobileSchema } from "./base/mobileSchema";
 
-const userSchema: Schema = new Schema<User & Document>({
-  username: {
-    type: String,
-    required: true,
-    minlength: 3,
-    maxlength: 20,
-  },
-  fullname: {
-    type: String,
-    required: true,
-    minlength: 3,
-    maxlength: 50,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-    minlength: 8,
-  },
-  mobile: {
-    type: String,
-    required: true,
-    minlength: 10,
-    maxlength: 15,
-  },
-  dob: {
-    type: Date,
-    required: true,
-  },
-  isBlocked: {
-    type: Boolean,
-    default: false,
-  },
-  isPremier: {
-    type: Boolean,
-    default: false,
-  },
-  premiumExpiry: {
-    type: Date,
-    default: null,
-  },
-  profilePic: {
-    type: String,
-    default: null,
-  },
-  visibility: {
-    type: String,
-    default: "public",
-  },
-  location: {
-    longitude: {
-      type: Number,
+const userSchema: Schema = new Schema<IUser & Document>(
+  {
+    username: {
+      type: String,
+      required: [true, "Name is required"],
+      minlength: [3, "Name must contain at least 3 characters"],
+      maxlength: [20, "Name must contain at most 20 characters"],
+      unique: true,
     },
-    latitude: {
-      type: Number,
+    fullname: {
+      type: String,
+      required: [true, "Name is required"],
+      minlength: [3, "Name must contain at least 3 characters"],
+      maxlength: [20, "Name must contain at most 20 characters"],
     },
+    password: {
+      type: String,
+      required() {
+        return !this.isGoogleAuth;
+      },
+    },
+    isBlocked: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    isGoogleAuth: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    dob: {
+      type: Date,
+      default: new Date("1990-01-01"),
+      min: new Date("1900-01-01"),
+      max: new Date(),
+      required: true,
+    },
+    profilePic: { type: String },
+    coords: {
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        min: 2,
+        max: 2,
+      },
+    },
+    isPremier: { type: Boolean, default: false },
+    premiumExpiry: { type: Date, default: null },
+    visibility: { type: String, default: "public" },
+    address: userAddressSchema,
   },
-  lastloggedin: {
-    type: Number,
-    default: Date.now(),
-  },
-});
+  { timestamps: true }
+);
 
-const userModel: Model<User & Document> = mongoose.model<User & Document>("Users", userSchema);
+userSchema.add(emailSchema);
+userSchema.add(mobileSchema);
+
+const userModel: Model<IUser & Document> = mongoose.model<IUser & Document>(
+  "Users",
+  userSchema
+);
 
 export default userModel;
-
-
-
-
-
-
-
-
-
-// address: {
-//     country: {
-//       type: String,
-//       required: true,
-//     },
-//     state: {
-//       type: String,
-//       required: true,
-//     },
-//     district: {
-//       type: String,
-//       required: true,
-//     },
-//     city: {
-//       type: String,
-//       required: true,
-//     },
-//     zip: {
-//       type: Number,
-//       required: true,
-//     },
-//   },

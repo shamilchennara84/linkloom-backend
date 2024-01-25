@@ -1,3 +1,3 @@
-export interface SendMail {
-  sendMail(email: string, otp: number): void;
+export interface ISendOTP {
+  sendOTP(email: string,name:string, otp: number): void;
 }
