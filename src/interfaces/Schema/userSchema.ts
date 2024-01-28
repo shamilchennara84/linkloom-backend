@@ -40,9 +40,6 @@ export interface IUserAuth {
     password: string
 }
 
-
-
-
 // api response for single user as data
 export interface IApiUserRes {
     status: number

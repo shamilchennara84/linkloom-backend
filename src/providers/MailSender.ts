@@ -388,6 +388,7 @@ export class MailSender implements ISendOTP {
     };
 
     mailTransporter.sendMail(details, (err: Error | null) => {
+		console.log("mail sent");
       if (err) {
         console.log(err.message);
       }

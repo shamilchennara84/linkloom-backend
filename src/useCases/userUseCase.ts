@@ -1,10 +1,12 @@
-import { OTP_TIMER } from "../constants/constants";
+
+// import { OTP_TIMER } from "../constants/constants";
 import { STATUS_CODES } from "../constants/httpStatusCodes";
 import { TempUserRepository } from "../infrastructure/repositories/tempUserRepository";
 import { UserRepository } from "../infrastructure/repositories/userRepository";
 import {
   ITempUserReq,
   ITempUserRes,
+  
 } from "../interfaces/Schema/tempUserSchema";
 import {
   IUser,
@@ -20,7 +22,7 @@ import { JWTtoken } from "../providers/jwtToken";
 export class UserUseCase {
   constructor(
     private readonly encrypt: Encrypt,
-    private readonly JWTtoken: JWTtoken,
+    private readonly jwt: JWTtoken,
     private readonly userRepository: UserRepository,
     private readonly tempUserRepository: TempUserRepository,
     private readonly mailer: MailSender
@@ -31,29 +33,25 @@ export class UserUseCase {
     return isUserExist;
   }
   async isUsernameExist(username: string): Promise<IUser | null> {
-    const isUserExist = await this.userRepository.findByUname(username);
-    return isUserExist;
+    const isUserExist = await this.userRepository.findByUname(username)
+    return isUserExist
   }
 
   async saveTempUserDetails(
     userData: ITempUserReq
   ): Promise<ITempUserRes & { userAuthToken: string }> {
     const user = await this.tempUserRepository.saveUser(userData);
-    const userAuthToken = this.JWTtoken.generateTempToken(user._id);
+    console.log(userData,user);
+    const userAuthToken = this.jwt.generateTempToken(user._id);
     return { ...JSON.parse(JSON.stringify(user)), userAuthToken };
   }
 
-  async sendTimeoutOTP(id: ID,name:string, email: string, OTP: number) {
-    try {
-      this.mailer.sendOTP(email,name,OTP);
+  async updateOtp(id: ID, OTP: number) {
+    return await this.tempUserRepository.updateOtp(id, OTP);
+  }
 
-        setTimeout(async () => {
-          await this.tempUserRepository.unsetOtp(id, email);
-        }, OTP_TIMER);
-    } catch (error) {
-      console.log(error);
-      throw Error('error while sending timeout OTP')
-    }
+  async findTempUserById(id: ID) {
+    return await this.tempUserRepository.findById(id);
   }
 
   async saveUserDetails(
@@ -61,8 +59,8 @@ export class UserUseCase {
   ): Promise<IApiUserAuthRes> {
     const user = await this.userRepository.saveUser(userData);
     console.log("user data saved, on usecase", user);
-    const accessToken = this.JWTtoken.generateAccessToken(user._id);
-    const refreshToken = this.JWTtoken.generateRefreshToken(user._id);
+    const accessToken = this.jwt.generateAccessToken(user._id);
+    const refreshToken = this.jwt.generateRefreshToken(user._id);
     return {
       status: STATUS_CODES.OK,
       data: user,
@@ -72,25 +70,18 @@ export class UserUseCase {
     };
   }
 
-  // async verifyLogin(email: string, password: string) {
-  //   const userData = await this.userRepository.findByEmail(email);
-  //   if (userData !== null) {
-  //     if (userData.isBlocked) {
-  //       throw new Error("You are blocked by admin");
-  //     } else {
-  //       const passwordMatch = await this.encrypt.comparePassword(
-  //         password,
-  //         userData.password as string
-  //       );
-  //       if (passwordMatch) {
-  //         const token = this.JWTtoken.generateToken(userData._id);
-  //         return {
-  //           status: 200,
-  //           data: { userData, token },
-  //         };
-  //       }
-  //     }
-  //   } else {
-  //     throw new Error("invalid email or password");
-  //   }
+  sendTimeoutOTP(id:ID,name:string,email:string,OTP:number){
+    try {
+      this.mailer.sendOTP(email,name, OTP)
+                    
+            // setTimeout(async() => {
+            //     await this.tempUserRepository.unsetOtp(id)
+            // }, OTP_TIMER)
+    } catch (error) {
+      console.log(error);
+            throw Error('Error while sending timeout otp')
+    }
+  }
+
+  
 }

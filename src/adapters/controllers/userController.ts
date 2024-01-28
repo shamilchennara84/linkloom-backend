@@ -7,6 +7,7 @@ import { Request, Response } from "express";
 import { IUserAuth } from "../../interfaces/Schema/userSchema";
 import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import { ITempUserReq } from "../../interfaces/Schema/tempUserSchema";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 export class UserController {
   constructor(
@@ -20,18 +21,22 @@ export class UserController {
     try {
       const { fullname, mobile, username, email, password } =
         req.body as IUserAuth;
+
+      // Check if a user with the provided email or username already exists in the database
       const isUsernameExist = await this.userUseCase.isUsernameExist(username);
       if (isUsernameExist) {
-        res
+        return res
           .status(STATUS_CODES.FORBIDDEN)
           .json({ message: "Username already Exist" });
       }
       const isEmailExist = await this.userUseCase.isEmailExist(email);
       if (isEmailExist) {
-        res
+        return res
           .status(STATUS_CODES.FORBIDDEN)
           .json({ message: "Email already Exist" });
       }
+
+      // Generate OTP for user authentication and encrypt the user's password
       const OTP = this.otpGenerator.generateOTP();
       console.log(`OTP is ${OTP}`);
       const securePassword = await this.encrypt.encryptPassword(password);
@@ -42,11 +47,19 @@ export class UserController {
         mobile,
         password: securePassword,
         otp: OTP,
+        otpTries: 0,
+        otpExpiresAt: new Date(Date.now() + 3 * 60 * 1000),
       };
-
+      // Save temporary user data during the registration process
       const tempUser = await this.userUseCase.saveTempUserDetails(user);
 
-      this.userUseCase.sendTimeoutOTP(tempUser._id,tempUser.fullname,tempUser.email,OTP)
+      // Send OTP via email to the user for verification
+      this.userUseCase.sendTimeoutOTP(
+        tempUser._id,
+        tempUser.fullname,
+        tempUser.email,
+        OTP
+      );
       res
         .status(STATUS_CODES.OK)
         .json({ message: "Success", token: tempUser.userAuthToken });
@@ -56,43 +69,85 @@ export class UserController {
     }
   }
 
-  //   async validateUserOTP(req: Request, res: Response) {
-  //     try {
-  //       console.log("Validating OTP");
-  //       const userProvidedOTP = req.body.otp;
-  //       const storedOTP = req.app.locals.OTP;
-
-  //       if (userProvidedOTP === storedOTP) {
-  //         const newUser = await this.userUseCase.saveUserDetails(req.app.locals.userData);
-  //         console.log("User saved:", newUser);
-  //         req.app.locals.userData = null;
-  //         console.log("User details saved successfully");
-  //         res.status(200).send();
+  // async resendOTP(req: Request, res: Response) {
+  //   try {
+  //     const authToken = req.headers.authorization;
+  //     if (authToken) {
+  //       const decode = jwt.verify(
+  //         authToken.slice(7),
+  //         process.env.JWT_SECRET_KEY as string
+  //       ) as JwtPayload;
+  //       const tempUser = await this.userUseCase.findTempUserById(decode.id);
+  //       if (tempUser) {
+  //         const OTP = this.otpGenerator.generateOTP();
+  //         console.log(OTP, "new resend otp");
+  //         await this.userUseCase.sendmailOTP(
+  //           tempUser._id,
+  //           tempUser.fullname,
+  //           tempUser.email,
+  //           OTP
+  //         );
+  //         res.status(STATUS_CODES.OK).json({ message: "OTP has been sent" });
   //       } else {
-  //         console.log("OTP didn't match");
-  //         res.status(400).json({ status: false, message: "Invalid OTP" });
+  //         res
+  //           .status(STATUS_CODES.UNAUTHORIZED)
+  //           .json({ message: "user timeout, register again" });
   //       }
-  //     } catch (error) {
-  //       console.error(error);
-  //       res.status(500).json({ error: "Internal server error" });
+  //     } else {
+  //       res
+  //         .status(STATUS_CODES.UNAUTHORIZED)
+  //         .json({ message: "AuthToken missing" });
   //     }
+  //     console.log("OTP resent successfully");
+  //     res.status(200).json({ message: "OTP has been sent" });
+  //   } catch (error) {
+  //     console.error("Error while resending OTP:", error);
+  //     res.status(500).json({ error: "Internal server error" });
   //   }
+  // }
 
-  //   async resendOTP(req: Request, res: Response) {
-  //     try {
-  //       const newOTP = this.otpGenerator.generateOTP();
-  //       req.app.locals.OTP = newOTP;
 
-  //       const { email, fullname } = req.app.locals.userData;
 
-  //       this.mailer.sendMail(email, fullname, newOTP);
-  //       console.log("OTP resent successfully");
-  //       res.status(200).json({ message: "OTP has been sent" });
-  //     } catch (error) {
-  //       console.error("Error while resending OTP:", error);
-  //       res.status(500).json({ error: "Internal server error" });
-  //     }
-  //   }
+    async validateUserOTP(req: Request, res: Response) {
+      try {
+        const {otp} = req.body
+        const authToken = req.headers.authorization 
+        if(authToken){
+            const decoded = jwt.verify(authToken.slice(7),process.env.JWT_SECRET_KEY as string) as JwtPayload
+            console.log('decoded',decoded);
+            const user = await this.userUseCase.findTempUserById(
+              decoded.userId
+            );
+            if(user){
+              console.log(otp,user.otp);
+              if(otp==user.otp){
+                const savedData = await this.userUseCase.saveUserDetails({
+                  fullname:user.fullname,
+                  username:user.username,
+                  email:user.email,
+                  mobile:user.mobile,
+                  password: user.password,
+
+                })
+                res.status(savedData.status).json(savedData)
+              }else{
+                console.log('otp didnt match');
+                        res.status(STATUS_CODES.UNAUTHORIZED).json({message: 'Invalid OTP'})
+                    }
+                } else {
+                    res.status(STATUS_CODES.UNAUTHORIZED).json({message: 'Timeout, Register again'})
+                }
+            }else{
+                res.status(STATUS_CODES.UNAUTHORIZED).json({message: 'authToken missing, Register again'})
+            }
+
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+    
+     
 
   //   async userLogin(req: Request, res: Response, next: NextFunction) {
   //     try {

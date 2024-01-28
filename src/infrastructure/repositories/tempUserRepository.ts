@@ -7,6 +7,7 @@ import { ITempUserRepo } from "../../interfaces/repos/tempUserRepo";
 import { tempUserModel } from "../../entities/models/temp/tempUserModel";
 import { ID } from "../../interfaces/common";
 
+
 export class TempUserRepository implements ITempUserRepo {
   async saveUser(user: ITempUserReq): Promise<ITempUserRes> {
     return await tempUserModel.findOneAndUpdate(
@@ -16,8 +17,8 @@ export class TempUserRepository implements ITempUserRepo {
           fullname: user.fullname,
           username: user.username,
           email: user.email,
-          otp: user.otp,
           password: user.password,
+          otp:user.otp,
           expireAt: Date.now(),
         },
       },
@@ -33,25 +34,30 @@ export class TempUserRepository implements ITempUserRepo {
     return await tempUserModel.findById(id);
   }
 
-  async unsetOtp(id: ID, email: string): Promise<ITempUserRes | null> {
+  async unsetOtp(id: ID): Promise<ITempUserRes | null> {
     return await tempUserModel.findByIdAndUpdate(
-      { _id: id, email },
+      { _id: id },
       { $unset: { otp: 1 } },
-      { new: true } 
+      { new: true }
     );
   }
 
-  async updateOTP(
-    id: ID,
-    email: string,
-    OTP: number
-  ): Promise<ITempUserRes | null> {
-    return tempUserModel.findOneAndUpdate(
-      { _id: id, email },
-      {
-        $set: { otp: OTP },
-      },
-      { new: true }
+  async updateOtp(id: ID,OTP:number): Promise<ITempUserRes | null> {
+     const user = await tempUserModel.findByIdAndUpdate(
+       id,
+       {
+         $set: { otpExpiresAt: new Date(Date.now() + 5 * 60 * 1000), otp: OTP },
+       },
+       { new: true }
+     );
+     return user;
+  }
+
+  async updateOtpTries(id: ID): Promise<ITempUserRes | null> {
+     const user = await tempUserModel.findByIdAndUpdate(
+      { _id: id },
+      { $inc: { otpTries: 1 } },{new:true}
     );
+    return user
   }
 }
