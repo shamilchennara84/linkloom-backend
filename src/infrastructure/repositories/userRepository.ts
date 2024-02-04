@@ -43,6 +43,20 @@ export class UserRepository implements IUserRepo {
       .exec();
   }
 
+  async findUserCount(searchQuery: string = ""): Promise<number> {
+    const regex = new RegExp(searchQuery, "i");
+    return await userModel
+      .find({
+        $or: [
+          { name: { $regex: regex } },
+          { email: { $regex: regex } },
+          { mobile: { $regex: regex } },
+        ],
+      })
+      .countDocuments()
+      .exec();
+  }
+
   async findByUname(username: string): Promise<IUser | null> {
     return await userModel.findOne({ username });
   }

@@ -1,11 +1,11 @@
 import express from "express";
-import cookieParser from "cookie-parser";
 import dotenv from "dotenv";
 dotenv.config();
 import cors from "cors";
 import path from "path";
 import adminRouter from "../router/adminRouter";
 import userRouter from "../router/userRouter";
+import tokenRouter from "../router/tokenRouter";
 
 export const createServer = () => {
   try {
@@ -13,8 +13,6 @@ export const createServer = () => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(express.static(path.join(__dirname, "../public")));
-
-    app.use(cookieParser())
 
     app.use(
       cors({
@@ -25,6 +23,8 @@ export const createServer = () => {
 
     app.use("/api/admin", adminRouter);
     app.use("/api/user", userRouter);
+    app.use("/api/token", tokenRouter);
+
     return app;
   } catch (error) {
     const err: Error = error as Error;
