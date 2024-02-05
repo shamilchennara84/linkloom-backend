@@ -1,8 +1,14 @@
 // import { OTP_TIMER } from "../constants/constants";
 
+import { log } from "console";
+import * as fs from "fs";
 import { MAX_OTP_TRY, OTP_TIMER } from "../constants/constants";
 import { STATUS_CODES } from "../constants/httpStatusCodes";
-import { get200Response, get500Response } from "../infrastructure/helperfunctions/response";
+import {
+  get200Response,
+  get500Response,
+  getErrorResponse,
+} from "../infrastructure/helperfunctions/response";
 import { TempUserRepository } from "../infrastructure/repositories/tempUserRepository";
 import { UserRepository } from "../infrastructure/repositories/userRepository";
 import { ITempUserReq, ITempUserRes } from "../interfaces/Schema/tempUserSchema";
@@ -12,11 +18,15 @@ import {
   IUserSocialAuth,
   IApiUserAuthRes,
   IUsersAndCount,
+  IUserUpdate,
+  IApiUserRes,
+  IUserRes,
 } from "../interfaces/Schema/userSchema";
 import { IApiRes, ID } from "../interfaces/common";
 import { MailSender } from "../providers/MailSender";
 import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
+import path from "path";
 
 export class UserUseCase {
   constructor(
@@ -146,6 +156,72 @@ export class UserUseCase {
       const users = await this.userRepository.findAllUser(page, limit, searchQuery);
       const userCount = await this.userRepository.findUserCount(searchQuery);
       return get200Response({ users, userCount });
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async blockUser(userId: string) {
+    try {
+      await this.userRepository.blockUnblockUser(userId);
+      return get200Response(null);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async updateUserData(userId: ID, user: IUserUpdate): Promise<IApiUserRes> {
+    try {
+      const updatedUser = await this.userRepository.updateUser(userId, user);
+      return get200Response(updatedUser as IUserRes);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async updateUserProfilePic(
+    userId: ID,
+    fileName: string | undefined
+  ): Promise<IApiUserRes> {
+    try {
+      if (!fileName)
+        return getErrorResponse(
+          STATUS_CODES.BAD_REQUEST,
+          "We didnt got the image, try again"
+        );
+      log(userId, fileName, "userId, filename from use case");
+      const user = await this.userRepository.findById(userId);
+      // Deleting user dp if it already exist
+      if (user && user.profilePic) {
+        const filePath = path.join(__dirname, `../../images/${user.profilePic}`);
+        fs.unlinkSync(filePath);
+      }
+      const updatedUser = await this.userRepository.updateUserProfilePic(
+        userId,
+        fileName
+      );
+      if (updatedUser) return get200Response(updatedUser);
+      else return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async removeUserProfileDp(userId: ID): Promise<IApiUserRes> {
+    try {
+      const user = await this.userRepository.findById(userId);
+      if (!user) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
+      // Deleting user dp if it already exist
+      if (user.profilePic) {
+        const filePath = path.join(__dirname, `../../images/${user.profilePic}`);
+        fs.unlinkSync(filePath);
+      }
+      const updatedUser = await this.userRepository.removeUserProfileDp(userId);
+      if (updatedUser) {
+        return get200Response(updatedUser);
+      }
+
+      return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
     } catch (error) {
       return get500Response(error as Error);
     }

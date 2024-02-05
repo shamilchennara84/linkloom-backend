@@ -4,6 +4,7 @@ import {
   IUserAuth,
   IUserRes,
   IUserSocialAuth,
+  IUserUpdate,
 } from "../../interfaces/Schema/userSchema";
 import { ID } from "../../interfaces/common";
 import { IUserRepo } from "../../interfaces/repos/userRepo";
@@ -14,7 +15,7 @@ export class UserRepository implements IUserRepo {
     return await new userModel(user).save();
   }
 
-  async findById(id: string): Promise<IUser | null> {
+  async findById(id: ID): Promise<IUser | null> {
     return await userModel.findById(id);
   }
 
@@ -61,21 +62,6 @@ export class UserRepository implements IUserRepo {
     return await userModel.findOne({ username });
   }
 
-  async updateGoogleAuth(id: ID, profilePic: string | undefined) {
-    try {
-      const userData = await userModel.findById({ _id: id });
-      if (userData) {
-        userData.isGoogleAuth = true;
-        if (profilePic !== undefined && !userData.profilePic)
-          userData.profilePic = profilePic;
-        await userData.save();
-      }
-    } catch (error) {
-      console.log(error);
-      throw Error("Error while updating google auth");
-    }
-  }
-
   async blockUnblockUser(userId: string) {
     try {
       const user = await userModel.findById({ _id: userId });
@@ -88,5 +74,41 @@ export class UserRepository implements IUserRepo {
     } catch (error) {
       throw Error("Error while blocking/unblocking user");
     }
+  }
+
+  async updateUser(userId: ID, user: IUserUpdate): Promise<IUserRes | null> {
+    return await userModel.findByIdAndUpdate(
+      { _id: userId },
+      {
+        fullname: user.fullname,
+        mobile: user.mobile,
+        dob: user.dob,
+      },
+      { new: true }
+    );
+  }
+
+  async updateUserProfilePic(userId: ID, fileName: string): Promise<IUserRes | null> {
+    return await userModel.findByIdAndUpdate(
+      { _id: userId },
+      {
+        $set: {
+          profilePic: fileName,
+        },
+      },
+      { new: true }
+    );
+  }
+
+  async removeUserProfileDp(userId: ID): Promise<IUserRes | null> {
+    return await userModel.findByIdAndUpdate(
+      { _id: userId },
+      {
+        $unset: {
+          profilePic: "",
+        },
+      },
+      { new: true }
+    );
   }
 }

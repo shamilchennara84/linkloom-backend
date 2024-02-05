@@ -1,12 +1,9 @@
 import express from "express";
 const adminRouter = express.Router();
-import { aController} from "../../providers/controllers";
-
-
+import { aController } from "../../providers/controllers";
 
 adminRouter.post("/login", (req, res) => aController.adminLogin(req, res));
-adminRouter.get("/users",  (req, res) => aController.getAllUsers(req, res));
-
-
+adminRouter.get("/users", (req, res) => aController.getAllUsers(req, res));
+adminRouter.patch("/users/block/:userId", (req, res) => aController.blockUser(req, res));
 
 export default adminRouter;

@@ -27,6 +27,6 @@ const postUseCase = new PostUseCase(postRepository)
 const adminUseCase = new AdminUseCase(encrypt, adminRepository, jwttoken);
 
 
-export const uController = new UserController(userUseCase, mailSender, otpGenerator, encrypt);
+export const uController = new UserController(userUseCase, otpGenerator, encrypt);
 export const postController = new PostController(postUseCase)
 export const aController = new AdminController(adminUseCase,userUseCase,)

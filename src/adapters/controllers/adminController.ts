@@ -22,4 +22,9 @@ export class AdminController {
     const apiRes = await this.userUseCase.getAllUsers(page, limit, searchQuery);
     res.status(apiRes.status).json(apiRes);
   }
+
+  async blockUser(req: Request, res: Response) {
+    const apiRes = await this.userUseCase.blockUser(req.params.userId as string);
+    res.status(apiRes.status).json(apiRes);
+  }
 }

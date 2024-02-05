@@ -1,17 +1,16 @@
 import { UserUseCase } from "../../useCases/userUseCase";
 import { Encrypt } from "../../providers/bcryptPassword";
 import { GenerateOTP } from "../../providers/otpGenerator";
-import { MailSender } from "../../providers/MailSender";
 import { Request, Response } from "express";
-import { IUserAuth } from "../../interfaces/Schema/userSchema";
+import { IUserAuth, IUserUpdate } from "../../interfaces/Schema/userSchema";
 import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import { ITempUserReq } from "../../interfaces/Schema/tempUserSchema";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { ID } from "../../interfaces/common";
 
 export class UserController {
   constructor(
     private userUseCase: UserUseCase,
-    private mailer: MailSender,
     private otpGenerator: GenerateOTP,
     private encrypt: Encrypt
   ) {}
@@ -19,7 +18,6 @@ export class UserController {
   async userRegister(req: Request, res: Response) {
     try {
       const { fullname, mobile, username, email, password } = req.body as IUserAuth;
-
 
       const isUsernameExist = await this.userUseCase.isUsernameExist(username);
       if (isUsernameExist) {
@@ -118,31 +116,36 @@ export class UserController {
       console.log(error);
     }
   }
-  
+
   async userLogin(req: Request, res: Response) {
     try {
       const { email, password } = req.body;
-      const authData = await this.userUseCase.verifyLogin(email, password );
-      res.status(authData.status).json(authData)
+      const authData = await this.userUseCase.verifyLogin(email, password);
+      res.status(authData.status).json(authData);
     } catch (error) {
       console.log(error);
     }
   }
 
+  async updateProfile(req: Request, res: Response) {
+    const user = req.body as IUserUpdate;
+    const userId: ID = req.params.userId as unknown as ID;
+    const apiRes = await this.userUseCase.updateUserData(userId, user);
+    res.status(apiRes.status).json(apiRes);
+  }
 
+  async updateUserProfileDp(req: Request, res: Response) {
+    const userId: ID = req.params.userId as unknown as ID;
+    const fileName = req.file?.filename;
+    const apiRes = await this.userUseCase.updateUserProfilePic(userId, fileName);
+    res.status(apiRes.status).json(apiRes);
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
+  async removeUserProfileDp(req: Request, res: Response) {
+    const userId: ID = req.params.userId as unknown as ID;
+    const apiRes = await this.userUseCase.removeUserProfileDp(userId);
+    res.status(apiRes.status).json(apiRes);
+  }
 
   // async resendOTP(req: Request, res: Response) {
   //   try {
@@ -178,19 +181,6 @@ export class UserController {
   //   } catch (error) {
   //     console.error("Error while resending OTP:", error);
   //     res.status(500).json({ error: "Internal server error" });
-  //   }
-  // }
-
-
-  //   async logout(req: Request, res: Response, next: NextFunction) {
-  //     try {
-  //       res.cookie("JWT", "", {
-  //         httpOnly: true,
-  //         expires: new Date(0),
-  //       });
-  //     } catch (error) {
-  //       next(error);
-  //     }
   //   }
   // }
 }
