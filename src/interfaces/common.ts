@@ -1,5 +1,6 @@
 import { Schema } from "mongoose";
 import { IUserRes, IUsersAndCount } from "./Schema/userSchema";
+import { IPostRes } from "./Schema/postSchema";
 
 export type ID = Schema.Types.ObjectId
 
@@ -16,7 +17,7 @@ export interface IUserAddress {
   zip: number;
 }
 
-export type AllResTypes = IUserRes | IUserRes[] | IUsersAndCount |null;
+export type AllResTypes = IUserRes | IUserRes[] | IUsersAndCount | IPostRes | IPostRes[] | null;
 
 export interface IApiRes<T extends AllResTypes> {
   status: number;

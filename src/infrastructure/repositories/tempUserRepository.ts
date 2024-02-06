@@ -16,6 +16,7 @@ export class TempUserRepository implements ITempUserRepo {
         $set: {
           fullname: user.fullname,
           username: user.username,
+          mobile:user.mobile,
           email: user.email,
           password: user.password,
           otp:user.otp,

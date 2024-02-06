@@ -9,21 +9,21 @@ export class PostController {
     try {
       const postURL = req.file ? req.file.path : ""; // Assuming multer stores the file path in req.file
 
-      const { userId, caption, tags, createdAt } = req.body;
+      const { userId, caption, location, createdAt } = req.body;
       // Create an object with the post data
       const postData: IPostReq = {
         userId,
         postURL,
         caption,
-        tags,
+        location,
         createdAt: new Date(createdAt), // Convert createdAt to a Date object if needed
       };
 
       // Call your use case or service to save the post
-      const savedPost = await this.postUserCase.savePost(postData);
+      const apiRes = await this.postUserCase.savePost(postData);
 
       // Respond with the saved post data
-      res.status(savedPost.status).json(savedPost);
+      res.status(apiRes.status).json(apiRes);
     } catch (error) {
       console.log(error);
     }

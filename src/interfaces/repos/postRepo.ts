@@ -1,8 +1,9 @@
 import { IPostReq,IPostRes } from "../Schema/postSchema";
+import { ID } from "../common";
 
 
 
 export interface IPostRepo {
   savePost(post: IPostReq): Promise<IPostRes>;
-  // getPosts(userId?: string): Promise<IPostRes[]>;
+  fetchUserPosts(userId: ID): Promise<IPostRes[]>;
 }

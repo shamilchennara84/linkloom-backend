@@ -5,118 +5,82 @@ import { Request, Response } from "express";
 import { IUserAuth, IUserUpdate } from "../../interfaces/Schema/userSchema";
 import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import { ITempUserReq } from "../../interfaces/Schema/tempUserSchema";
-import jwt, { JwtPayload } from "jsonwebtoken";
 import { ID } from "../../interfaces/common";
+import { RequestWithUser } from "../../infrastructure/middleware/validateTokenAndTempUser.ts";
 
 export class UserController {
-  constructor(
-    private userUseCase: UserUseCase,
-    private otpGenerator: GenerateOTP,
-    private encrypt: Encrypt
-  ) {}
+  constructor(private userUseCase: UserUseCase, private otpGenerator: GenerateOTP, private encrypt: Encrypt) {}
 
   async userRegister(req: Request, res: Response) {
     try {
       const { fullname, mobile, username, email, password } = req.body as IUserAuth;
 
-      const isUsernameExist = await this.userUseCase.isUsernameExist(username);
-      if (isUsernameExist) {
-        return res
-          .status(STATUS_CODES.FORBIDDEN)
-          .json({ message: "Username already Exist" });
-      }
-      const isEmailExist = await this.userUseCase.isEmailExist(email);
-      if (isEmailExist) {
-        return res
-          .status(STATUS_CODES.FORBIDDEN)
-          .json({ message: "Email already Exist" });
-      }
-
-      // Generate OTP for user authentication and encrypt the user's password
-      const OTP = this.otpGenerator.generateOTP();
-      console.log(`OTP is ${OTP}`);
+      const generatedOtp = this.otpGenerator.generateOTP();
       const securePassword = await this.encrypt.encryptPassword(password);
-      const user: ITempUserReq = {
+      // Create temporary user object
+      const tempUser: ITempUserReq = {
         fullname,
         username,
         email,
         mobile,
         password: securePassword,
-        otp: OTP,
+        otp: generatedOtp,
         otpTries: 0,
         otpExpiresAt: new Date(Date.now() + 3 * 60 * 1000),
       };
+      console.log(tempUser," before saving");
       // Save temporary user data during the registration process
-      const tempUser = await this.userUseCase.saveTempUserDetails(user);
-
+      const savedTempUser = await this.userUseCase.saveTempUserDetails(tempUser);
       // Send OTP via email to the user for verification
+      console.log(savedTempUser," after saving");
       await this.userUseCase.sendTimeoutOTP(
-        tempUser._id,
-        tempUser.fullname,
-        tempUser.email,
-        OTP
+        savedTempUser._id,
+        savedTempUser.fullname,
+        savedTempUser.email,
+        generatedOtp
       );
-      return res
-        .status(STATUS_CODES.OK)
-        .json({ message: "Success", token: tempUser.userAuthToken });
+
+      return res.status(STATUS_CODES.OK).json({ message: "Success", token: savedTempUser.userAuthToken });
     } catch (error) {
       console.error(error);
-      res
-        .status(STATUS_CODES.INTERNAL_SERVER_ERROR)
-        .json({ error: "Internal server error" });
+      res.status(STATUS_CODES.INTERNAL_SERVER_ERROR).json({ error: "Internal server error" });
     }
   }
 
-  async validateUserOTP(req: Request, res: Response) {
+  async validateUserOTP(req: RequestWithUser, res: Response) {
     try {
-      const { otp } = req.body;
-      const authToken = req.headers.authorization;
+      // Check if the user property is present on the request object
+      if (!req.user) {
+        return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "User not authenticated" });
+      }
 
-      // Obtaining a temporary access token and fetching user information
-      if (authToken) {
-        const decoded = jwt.verify(
-          authToken.slice(7),
-          process.env.JWT_SECRET_KEY as string
-        ) as JwtPayload;
-        console.log("decoded", decoded);
-        const user = await this.userUseCase.findTempUserById(decoded.userId);
-        if (user) {
-          console.log(otp, user.otp);
-          if (otp == user.otp) {
-            // If OTP matches, save user data to the user collection
-            const savedData = await this.userUseCase.saveUserDetails({
-              fullname: user.fullname,
-              username: user.username,
-              email: user.email,
-              mobile: user.mobile,
-              password: user.password,
-            });
-            return res.status(savedData.status).json(savedData);
-          } else {
-            const tries = await this.userUseCase.updateOtpTry(decoded.userId);
-            if (!tries) {
-              return res
-                .status(STATUS_CODES.UNAUTHORIZED)
-                .json({ message: `maximum try for OTP exceeded` });
-            }
-            console.log("otp didnt match");
-            return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Invalid OTP" });
-          }
-        } else {
-          return res
-            .status(STATUS_CODES.UNAUTHORIZED)
-            .json({ message: "Timeout, Register again" });
-        }
+      const { otp } = req.body;
+
+      // Directly use the user object from the request
+      const user = req.user;
+      console.log(otp, user.otp);
+      if (otp == user.otp) {
+        // If OTP matches, save user data to the user collection
+        const savedData = await this.userUseCase.saveUserDetails({
+          fullname: user.fullname,
+          username: user.username,
+          email: user.email,
+          mobile: user.mobile,
+          password: user.password,
+        });
+        return res.status(savedData.status).json(savedData);
       } else {
-        return res
-          .status(STATUS_CODES.UNAUTHORIZED)
-          .json({ message: "authToken missing, Register again" });
+        const tries = await this.userUseCase.updateOtpTry(user._id);
+        if (!tries) {
+          return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: `maximum try for OTP exceeded` });
+        }
+        console.log("otp didn't match");
+        return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Invalid OTP" });
       }
     } catch (error) {
       console.log(error);
     }
   }
-
   async userLogin(req: Request, res: Response) {
     try {
       const { email, password } = req.body;

@@ -7,9 +7,12 @@ const express_1 = __importDefault(require("express"));
 const controllers_1 = require("../../providers/controllers");
 const multer_1 = require("../config/multer");
 const userAuth_1 = require("../middleware/userAuth");
+const userValidation_1 = require("../middleware/userValidation");
+const validateTokenAndTempUser_ts_1 = require("../middleware/validateTokenAndTempUser.ts");
 const userRouter = express_1.default.Router();
-userRouter.post("/register", (req, res) => controllers_1.uController.userRegister(req, res));
-userRouter.post("/validateOtp", (req, res) => controllers_1.uController.validateUserOTP(req, res));
+// Update the route definition to use the middleware
+userRouter.post("/register", userValidation_1.userRegisterValidation, (req, res) => controllers_1.uController.userRegister(req, res));
+userRouter.post("/validateOtp", validateTokenAndTempUser_ts_1.validateTokenAndTempUser, (req, res) => controllers_1.uController.validateUserOTP(req, res));
 userRouter.post("/login", (req, res) => controllers_1.uController.userLogin(req, res));
 // userRouter.post("/resendOtp", uController.resendOTP);
 userRouter.put("/update/:userId", userAuth_1.userAuth, (req, res) => controllers_1.uController.updateProfile(req, res));

@@ -19,9 +19,9 @@ const postSchema: Schema = new Schema<IPostReq & Document>(
       type: String,
       required: true,
     },
-    tags: {
-      type: [String],
-      default: [],
+    location: {
+      type: String,
+      required:true
     },
   },
   { timestamps: true }
