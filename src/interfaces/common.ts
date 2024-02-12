@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 import { IUserRes, IUsersAndCount } from "./Schema/userSchema";
 import { IPostRes } from "./Schema/postSchema";
 import { ILikeCountRes } from "./Schema/likeSchema";
+import { ICommentSchema } from "./Schema/commentSchema";
 
 export type ID = Schema.Types.ObjectId
 
@@ -18,7 +19,15 @@ export interface IUserAddress {
   zip: number;
 }
 
-export type AllResTypes = IUserRes | IUserRes[] | IUsersAndCount | IPostRes | IPostRes[] | ILikeCountRes | null;
+export type AllResTypes =
+  | IUserRes
+  | IUserRes[]
+  | IUsersAndCount
+  | IPostRes
+  | IPostRes[]
+  | ILikeCountRes
+  | ICommentSchema
+  | null;
 
 export interface IApiRes<T extends AllResTypes> {
   status: number;

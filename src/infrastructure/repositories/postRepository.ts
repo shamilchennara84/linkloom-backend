@@ -6,6 +6,8 @@ import { IPostRepo } from "../../interfaces/repos/postRepo";
 import likeModel from "../../entities/models/likeModel";
 
 import { ILikeCountRes } from "../../interfaces/Schema/likeSchema";
+import { ICommentSchema } from "../../interfaces/Schema/commentSchema";
+import commentModel from "../../entities/models/commentModel";
 
 export class PostRepository implements IPostRepo {
   async savePost(post: IPostReq): Promise<IPostRes> {
@@ -90,4 +92,43 @@ export class PostRepository implements IPostRepo {
       count: 0,
     };
   }
+
+  async addComment(postComment: ICommentSchema) {
+    const newComment = new commentModel(postComment);
+
+    const savedComment = await newComment.save();
+    const response =  await commentModel.aggregate([
+      { $match: { _id: savedComment._id } }, // Match the specific comment by its _id
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $limit: 1 }, // Limit the result to one comment
+    ]);
+    return response[0]
+  }
+
+  async getAllComments(postId: string) {
+    const comments = await commentModel.aggregate([
+      { $match: { postId: new Types.ObjectId(postId) } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+      { $sort: { createdAt: 1 } },
+    ]);
+    console.log(comments);
+    return comments;
+  }
 }
+

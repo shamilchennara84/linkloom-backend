@@ -1,9 +1,9 @@
-
 import { get200Response, get500Response } from "../infrastructure/helperfunctions/response";
 import { PostRepository } from "../infrastructure/repositories/postRepository";
 import { IPostReq, IPostRes, IPostUserRes } from "../interfaces/Schema/postSchema";
 import { IApiRes, ID } from "../interfaces/common";
 import { ILikeCountRes } from "../interfaces/Schema/likeSchema";
+import { ICommentSchema } from "../interfaces/Schema/commentSchema";
 
 
 export class PostUseCase {
@@ -58,8 +58,32 @@ export class PostUseCase {
   async UnlikePost(userId: ID, postId: ID): Promise<IApiRes<ILikeCountRes | null>> {
     try {
       const response = await this.postRepository.UnlikePost(userId.toString(), postId.toString());
-      if (!response ) {
+      if (!response) {
         throw new Error("Failed to Unlike post");
+      }
+      return get200Response(response);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async saveComment(postComment: ICommentSchema): Promise<IApiRes<ICommentSchema | null>> {
+    try {
+      const response = await this.postRepository.addComment(postComment);
+      if (!response) {
+        throw new Error("Failed to add comment");
+      }
+      return get200Response(response);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async getComments(postId: string) {
+    try {
+      const response = await this.postRepository.getAllComments(postId);
+      if (!response) {
+        throw new Error("Failed to fetch comment");
       }
       return get200Response(response);
     } catch (error) {

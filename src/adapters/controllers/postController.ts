@@ -1,8 +1,8 @@
-
 import { IPostReq } from "../../interfaces/Schema/postSchema";
 import { ID } from "../../interfaces/common";
 import { PostUseCase } from "../../useCases/postUseCase";
 import { Request, Response } from "express";
+import { ICommentSchema } from "../../interfaces/Schema/commentSchema";
 
 export class PostController {
   constructor(private postUserCase: PostUseCase) {}
@@ -76,4 +76,43 @@ export class PostController {
       console.log(error);
     }
   }
+
+  async createComment(req: Request, res: Response) {
+    try {
+  
+      const {
+        text: {
+          text: { comment },
+        },
+        createdAt,
+        postId,
+        userId,
+      } = req.body;
+      const postComment: ICommentSchema = {
+        postId,
+        userId,
+        text: comment,
+        createdAt,
+      };
+      const apiRes = await this.postUserCase.saveComment(postComment);
+      res.status(apiRes.status).json(apiRes);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getComments(req: Request, res: Response){
+    try {
+        const postId: string = req.params.postId 
+        const apiRes = await this.postUserCase.getComments(postId);
+
+        res.status(apiRes.status).json(apiRes);
+    } catch (error) {
+       console.log(error);
+    }
+       
+    
+
+  }
 }
+

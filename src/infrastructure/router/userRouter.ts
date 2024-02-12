@@ -18,16 +18,12 @@ userRouter.patch("/update/profileimage/:userId", userAuth, upload.single("image"
 );
 userRouter.patch("/remove/profileimage/:userId", userAuth, (req, res) => uController.removeUserProfileDp(req, res));
 
-
-
-
-
-
 userRouter.post("/addPost", upload.single("Image"), (req, res) => postController.savePost(req, res));
-userRouter.get("/userPost/:userId",(req,res)=>postController.userPosts(req,res))
-userRouter.get("/homePost/:userId",(req,res)=>postController.HomePosts(req,res))
-userRouter.get("/like/:userId/:postId",(req,res)=>postController.LikePost(req,res))
-userRouter.get("/unlike/:userId/:postId",(req,res)=>postController.UnlikePost(req,res))
+userRouter.get("/userPost/:userId", (req, res) => postController.userPosts(req, res));
+userRouter.get("/homePost/:userId", (req, res) => postController.HomePosts(req, res));
 
-
+userRouter.get("/like/:userId/:postId", (req, res) => postController.LikePost(req, res));
+userRouter.get("/unlike/:userId/:postId", (req, res) => postController.UnlikePost(req, res));
+userRouter.get('/comments/:postId',(req,res)=>postController.getComments(req,res))
+userRouter.post('/createcomment',(req,res)=>postController.createComment(req,res));
 export default userRouter;

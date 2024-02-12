@@ -23,4 +23,6 @@ userRouter.get("/userPost/:userId", (req, res) => controllers_1.postController.u
 userRouter.get("/homePost/:userId", (req, res) => controllers_1.postController.HomePosts(req, res));
 userRouter.get("/like/:userId/:postId", (req, res) => controllers_1.postController.LikePost(req, res));
 userRouter.get("/unlike/:userId/:postId", (req, res) => controllers_1.postController.UnlikePost(req, res));
+userRouter.get('/comments/:postId', (req, res) => controllers_1.postController.getComments(req, res));
+userRouter.post('/createcomment', (req, res) => controllers_1.postController.createComment(req, res));
 exports.default = userRouter;
