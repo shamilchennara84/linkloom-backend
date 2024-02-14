@@ -11,7 +11,7 @@ const userRouter = express.Router();
 userRouter.post("/register", userRegisterValidation, (req, res) => uController.userRegister(req, res));
 userRouter.post("/validateOtp", validateTokenAndTempUser, (req, res) => uController.validateUserOTP(req, res));
 userRouter.post("/login", (req, res) => uController.userLogin(req, res));
-// userRouter.post("/resendOtp", uController.resendOTP);
+userRouter.get("/get/:userId", userAuth, (req, res) => uController.userProfile(req, res));
 userRouter.put("/update/:userId", userAuth, (req, res) => uController.updateProfile(req, res));
 userRouter.patch("/update/profileimage/:userId", userAuth, upload.single("image"), (req, res) =>
   uController.updateUserProfileDp(req, res)
@@ -24,6 +24,8 @@ userRouter.get("/homePost/:userId", (req, res) => postController.HomePosts(req, 
 
 userRouter.get("/like/:userId/:postId", (req, res) => postController.LikePost(req, res));
 userRouter.get("/unlike/:userId/:postId", (req, res) => postController.UnlikePost(req, res));
-userRouter.get('/comments/:postId',(req,res)=>postController.getComments(req,res))
-userRouter.post('/createcomment',(req,res)=>postController.createComment(req,res));
+userRouter.get("/comments/:postId", (req, res) => postController.getComments(req, res));
+userRouter.post("/createcomment", (req, res) => postController.createComment(req, res));
 export default userRouter;
+
+// userRouter.post("/resendOtp", uController.resendOTP);

@@ -79,11 +79,9 @@ export class PostController {
 
   async createComment(req: Request, res: Response) {
     try {
-  
+      console.log(req.body);
       const {
-        text: {
-          text: { comment },
-        },
+        text: { comment },
         createdAt,
         postId,
         userId,
@@ -101,18 +99,14 @@ export class PostController {
     }
   }
 
-  async getComments(req: Request, res: Response){
+  async getComments(req: Request, res: Response) {
     try {
-        const postId: string = req.params.postId 
-        const apiRes = await this.postUserCase.getComments(postId);
+      const postId: string = req.params.postId;
+      const apiRes = await this.postUserCase.getComments(postId);
 
-        res.status(apiRes.status).json(apiRes);
+      res.status(apiRes.status).json(apiRes);
     } catch (error) {
-       console.log(error);
+      console.log(error);
     }
-       
-    
-
   }
 }
-

@@ -28,6 +28,7 @@ import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
 import path from "path";
 
+
 export class UserUseCase {
   constructor(
     private readonly encrypt: Encrypt,
@@ -46,9 +47,7 @@ export class UserUseCase {
     return isUserExist;
   }
 
-  async saveTempUserDetails(
-    userData: ITempUserReq
-  ): Promise<ITempUserRes & { userAuthToken: string }> {
+  async saveTempUserDetails(userData: ITempUserReq): Promise<ITempUserRes & { userAuthToken: string }> {
     const user = await this.tempUserRepository.saveUser(userData);
     console.log(userData, user);
     const userAuthToken = this.jwt.generateTempToken(user._id);
@@ -108,10 +107,7 @@ export class UserUseCase {
           refreshToken: "",
         };
       } else {
-        const passwordMatch = await this.encrypt.comparePassword(
-          password,
-          userData.password as string
-        );
+        const passwordMatch = await this.encrypt.comparePassword(password, userData.password as string);
         if (passwordMatch) {
           const accessToken = this.jwt.generateAccessToken(userData._id);
           console.log("accessToken", accessToken);
@@ -179,16 +175,9 @@ export class UserUseCase {
     }
   }
 
-  async updateUserProfilePic(
-    userId: ID,
-    fileName: string | undefined
-  ): Promise<IApiUserRes> {
+  async updateUserProfilePic(userId: ID, fileName: string | undefined): Promise<IApiUserRes> {
     try {
-      if (!fileName)
-        return getErrorResponse(
-          STATUS_CODES.BAD_REQUEST,
-          "We didnt got the image, try again"
-        );
+      if (!fileName) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "We didnt got the image, try again");
       log(userId, fileName, "userId, filename from use case");
       const user = await this.userRepository.findById(userId);
       // Deleting user dp if it already exist
@@ -196,10 +185,7 @@ export class UserUseCase {
         const filePath = path.join(__dirname, `../../images/${user.profilePic}`);
         fs.unlinkSync(filePath);
       }
-      const updatedUser = await this.userRepository.updateUserProfilePic(
-        userId,
-        fileName
-      );
+      const updatedUser = await this.userRepository.updateUserProfilePic(userId, fileName);
       if (updatedUser) return get200Response(updatedUser);
       else return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
     } catch (error) {
@@ -224,6 +210,16 @@ export class UserUseCase {
       return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
     } catch (error) {
       return get500Response(error as Error);
+    }
+  }
+
+  async getUserData(userId: ID):Promise<IApiUserRes> {
+    try {
+      const user = await this.userRepository.findById(userId)
+      if (!user) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
+      return get200Response(user);
+    } catch (error) {
+        return get500Response(error as Error);
     }
   }
 }

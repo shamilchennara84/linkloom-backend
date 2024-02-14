@@ -8,6 +8,8 @@ import { ITempUserReq } from "../../interfaces/Schema/tempUserSchema";
 import { ID } from "../../interfaces/common";
 import { RequestWithUser } from "../../infrastructure/middleware/validateTokenAndTempUser.ts";
 
+
+
 export class UserController {
   constructor(private userUseCase: UserUseCase, private otpGenerator: GenerateOTP, private encrypt: Encrypt) {}
 
@@ -28,11 +30,11 @@ export class UserController {
         otpTries: 0,
         otpExpiresAt: new Date(Date.now() + 3 * 60 * 1000),
       };
-      console.log(tempUser," before saving");
+      console.log(tempUser, " before saving");
       // Save temporary user data during the registration process
       const savedTempUser = await this.userUseCase.saveTempUserDetails(tempUser);
       // Send OTP via email to the user for verification
-      console.log(savedTempUser," after saving");
+      console.log(savedTempUser, " after saving");
       await this.userUseCase.sendTimeoutOTP(
         savedTempUser._id,
         savedTempUser.fullname,
@@ -89,6 +91,12 @@ export class UserController {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async userProfile(req: Request, res: Response) {
+    const userId = req.params.userId as unknown as ID;
+    const apiRes = await this.userUseCase.getUserData(userId);
+    res.status(apiRes.status).json(apiRes);
   }
 
   async updateProfile(req: Request, res: Response) {
