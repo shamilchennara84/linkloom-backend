@@ -4,6 +4,11 @@ import { userAddressSchema } from "./subSchema/addressSchema";
 import { emailSchema } from "./base/emailSchema";
 import { mobileSchema } from "./base/mobileSchema";
 
+enum Visibility {
+  Public = "public",
+  Private = "private",
+}
+
 const userSchema: Schema = new Schema<IUser & Document>(
   {
     username: {
@@ -57,7 +62,11 @@ const userSchema: Schema = new Schema<IUser & Document>(
     },
     isPremier: { type: Boolean, default: false },
     premiumExpiry: { type: Date, default: null },
-    visibility: { type: String, default: "public" },
+    visibility: {
+      type: String,
+      enum: Object.values(Visibility), 
+      default: Visibility.Public, 
+    },
     address: userAddressSchema,
   },
   { timestamps: true }

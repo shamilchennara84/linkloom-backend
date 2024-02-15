@@ -1,11 +1,5 @@
 import userModel from "../../entities/models/userModel";
-import {
-  IUser,
-  IUserAuth,
-  IUserRes,
-  IUserSocialAuth,
-  IUserUpdate,
-} from "../../interfaces/Schema/userSchema";
+import { IUser, IUserAuth, IUserRes, IUserSocialAuth, IUserUpdate } from "../../interfaces/Schema/userSchema";
 import { ID } from "../../interfaces/common";
 import { IUserRepo } from "../../interfaces/repos/userRepo";
 
@@ -23,11 +17,7 @@ export class UserRepository implements IUserRepo {
     return await userModel.findOne({ email });
   }
 
-  async findAllUser(
-    page: number,
-    limit: number,
-    searchQuery: string
-  ): Promise<[] | IUserRes[]> {
+  async findAllUser(page: number, limit: number, searchQuery: string): Promise<[] | IUserRes[]> {
     const regex = new RegExp(searchQuery, "i");
     return await userModel
       .find({
@@ -48,11 +38,7 @@ export class UserRepository implements IUserRepo {
     const regex = new RegExp(searchQuery, "i");
     return await userModel
       .find({
-        $or: [
-          { name: { $regex: regex } },
-          { email: { $regex: regex } },
-          { mobile: { $regex: regex } },
-        ],
+        $or: [{ name: { $regex: regex } }, { email: { $regex: regex } }, { mobile: { $regex: regex } }],
       })
       .countDocuments()
       .exec();
@@ -77,15 +63,19 @@ export class UserRepository implements IUserRepo {
   }
 
   async updateUser(userId: ID, user: IUserUpdate): Promise<IUserRes | null> {
-    return await userModel.findByIdAndUpdate(
-      { _id: userId },
-      {
-        fullname: user.fullname,
-        mobile: user.mobile,
-        dob: user.dob,
-      },
-      { new: true }
-    );
+    console.log("userupdatung ", user);
+   const updated = await userModel.findByIdAndUpdate(
+     { _id: userId },
+     {
+       fullname: user.fullname,
+       mobile: user.mobile,
+       dob: user.dob,
+       visibility: user.visibility
+     },
+     { new: true }
+   );
+      console.log("new data",updated);
+      return updated
   }
 
   async updateUserProfilePic(userId: ID, fileName: string): Promise<IUserRes | null> {

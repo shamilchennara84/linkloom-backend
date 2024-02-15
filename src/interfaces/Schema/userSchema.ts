@@ -27,7 +27,7 @@ export interface IUserRes extends IUser {}
 export interface IUserUpdate
   extends Omit<
     IUserRes,
-    "_id" | "email" | "password" | "isBlocked" | 'username' | 'isGoogleAuth' | 'isPremier' | 'visibility'
+    "_id" | "email" | "password" | "isBlocked" | 'username' | 'isGoogleAuth' | 'isPremier' 
   > {}
 
 // for social auth credentials
