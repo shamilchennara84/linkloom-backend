@@ -15,7 +15,7 @@ const followerSchema: Schema = new Schema<IFollowerReq & Document>(
     },
     isApproved: {
       type: Boolean,
-      default: false,
+      required:true
     },
   },
   { timestamps: true }

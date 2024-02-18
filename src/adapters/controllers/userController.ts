@@ -1,14 +1,16 @@
 import { UserUseCase } from "../../useCases/userUseCase";
 import { Encrypt } from "../../providers/bcryptPassword";
 import { GenerateOTP } from "../../providers/otpGenerator";
-import { Request, Response } from "express";
 import { IUserAuth, IUserUpdate } from "../../interfaces/Schema/userSchema";
 import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import { ITempUserReq } from "../../interfaces/Schema/tempUserSchema";
-import { ID } from "../../interfaces/common";
-import { RequestWithUser } from "../../infrastructure/middleware/validateTokenAndTempUser.ts";
+import { IApiRes, ID } from "../../interfaces/common";
+import { Request, Response } from "express-serve-static-core";
+import { RequestWithTempUser } from "../../infrastructure/middleware/validateTokenAndTempUser.ts";
 
-
+import { RequestWithUser } from "../../infrastructure/middleware/userAuth";
+import { IFollowCountRes, IFollowerReq } from "../../interfaces/Schema/followerSchema";
+import { getErrorResponse } from "../../infrastructure/helperfunctions/response";
 
 export class UserController {
   constructor(private userUseCase: UserUseCase, private otpGenerator: GenerateOTP, private encrypt: Encrypt) {}
@@ -30,11 +32,11 @@ export class UserController {
         otpTries: 0,
         otpExpiresAt: new Date(Date.now() + 3 * 60 * 1000),
       };
-      console.log(tempUser, " before saving");
+
       // Save temporary user data during the registration process
       const savedTempUser = await this.userUseCase.saveTempUserDetails(tempUser);
       // Send OTP via email to the user for verification
-      console.log(savedTempUser, " after saving");
+
       await this.userUseCase.sendTimeoutOTP(
         savedTempUser._id,
         savedTempUser.fullname,
@@ -49,7 +51,7 @@ export class UserController {
     }
   }
 
-  async validateUserOTP(req: RequestWithUser, res: Response) {
+  async validateUserOTP(req: RequestWithTempUser, res: Response) {
     try {
       // Check if the user property is present on the request object
       if (!req.user) {
@@ -116,6 +118,38 @@ export class UserController {
   async removeUserProfileDp(req: Request, res: Response) {
     const userId: ID = req.params.userId as unknown as ID;
     const apiRes = await this.userUseCase.removeUserProfileDp(userId);
+    res.status(apiRes.status).json(apiRes);
+  }
+
+  async followUser(req: RequestWithUser, res: Response) {
+    const userId = req.userid as ID;
+    const followerId = req.params.userId as unknown as ID;
+    const status = req.body.status;
+    const followData: IFollowerReq = {
+      followerUserId: userId,
+      followingUserId: followerId,
+      isApproved: true,
+    };
+    let apiRes: IApiRes<IFollowCountRes | null> = getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid status");
+    if (status === "Follow") {
+      apiRes = await this.userUseCase.followUser(followData);
+    } else if (status === "Request") {
+      followData.isApproved = false;
+      apiRes = await this.userUseCase.followUser(followData);
+    } else if (status === "Following") {
+      apiRes = await this.userUseCase.unFollowUser(userId, followerId);
+    }
+    console.log(apiRes);
+    res.status(apiRes.status).json(apiRes);
+  }
+
+  async getFollowStat(req: RequestWithUser, res: Response) {
+    console.log("hello follow status");
+    const userId = req.userid as ID;
+    const followerId = req.params.userId as unknown as ID;
+
+    const apiRes = await this.userUseCase.followStatus(userId, followerId);
+
     res.status(apiRes.status).json(apiRes);
   }
 

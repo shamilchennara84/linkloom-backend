@@ -47,10 +47,17 @@ export interface IUserAuth {
 }
 
 // api response for single user as data
+export interface IUserProfileData extends IUserRes {
+  postsCount: number;
+  followersCount: number;
+  followingCount: number;
+}
+
+// api response for single user as data
 export interface IApiUserRes {
-    status: number
-    message: string
-    data: IUserRes | null
+  status: number;
+  message: string;
+  data: IUserProfileData | null;
 }
 
 export interface IApiUserAuthRes extends IApiUserRes {

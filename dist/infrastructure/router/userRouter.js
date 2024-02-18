@@ -25,5 +25,9 @@ userRouter.get("/like/:userId/:postId", (req, res) => controllers_1.postControll
 userRouter.get("/unlike/:userId/:postId", (req, res) => controllers_1.postController.UnlikePost(req, res));
 userRouter.get("/comments/:postId", (req, res) => controllers_1.postController.getComments(req, res));
 userRouter.post("/createcomment", (req, res) => controllers_1.postController.createComment(req, res));
+userRouter
+    .route("/follow/:userId")
+    .get(userAuth_1.userAuth, (req, res) => controllers_1.uController.getFollowStat(req, res))
+    .post(userAuth_1.userAuth, (req, res) => controllers_1.uController.followUser(req, res));
 exports.default = userRouter;
 // userRouter.post("/resendOtp", uController.resendOTP);

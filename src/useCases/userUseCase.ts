@@ -4,11 +4,7 @@ import { log } from "console";
 import * as fs from "fs";
 import { MAX_OTP_TRY, OTP_TIMER } from "../constants/constants";
 import { STATUS_CODES } from "../constants/httpStatusCodes";
-import {
-  get200Response,
-  get500Response,
-  getErrorResponse,
-} from "../infrastructure/helperfunctions/response";
+import { get200Response, get500Response, getErrorResponse } from "../infrastructure/helperfunctions/response";
 import { TempUserRepository } from "../infrastructure/repositories/tempUserRepository";
 import { UserRepository } from "../infrastructure/repositories/userRepository";
 import { ITempUserReq, ITempUserRes } from "../interfaces/Schema/tempUserSchema";
@@ -27,7 +23,7 @@ import { MailSender } from "../providers/MailSender";
 import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
 import path from "path";
-
+import { IFollowCountRes, IFollowStatus, IFollowerReq } from "../interfaces/Schema/followerSchema";
 
 export class UserUseCase {
   constructor(
@@ -47,9 +43,18 @@ export class UserUseCase {
     return isUserExist;
   }
 
+  async getUserData(userId: ID): Promise<IApiUserRes> {
+    try {
+      const user = await this.userRepository.getProfileData(userId);
+      if (!user) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
+      return get200Response(user);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
   async saveTempUserDetails(userData: ITempUserReq): Promise<ITempUserRes & { userAuthToken: string }> {
     const user = await this.tempUserRepository.saveUser(userData);
-    console.log(userData, user);
+
     const userAuthToken = this.jwt.generateTempToken(user._id);
     return { ...JSON.parse(JSON.stringify(user)), userAuthToken };
   }
@@ -213,13 +218,35 @@ export class UserUseCase {
     }
   }
 
-  async getUserData(userId: ID):Promise<IApiUserRes> {
+  async followUser(followData: IFollowerReq): Promise<IApiRes<IFollowCountRes | null>> {
     try {
-      const user = await this.userRepository.findById(userId)
-      if (!user) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
-      return get200Response(user);
+      const followersData = await this.userRepository.followUser(followData);
+      if (!followersData) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
+      return get200Response({ count: followersData.count,status:followersData.status });
     } catch (error) {
-        return get500Response(error as Error);
+      return get500Response(error as Error);
+    }
+  }
+
+  async followStatus(userId: ID, followerId: ID): Promise<IApiRes<IFollowStatus | null>> {
+    try {
+      const followStatusData = await this.userRepository.followStatus(userId, followerId);
+      if (!followStatusData) {
+        return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId or followerId");
+      }
+      return get200Response(followStatusData);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async unFollowUser(userId: ID, followerId: ID): Promise<IApiRes<IFollowCountRes | null>> {
+    try {
+      const unfollowdata = await this.userRepository.unfollowUser(userId,followerId);
+      if (!unfollowdata) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
+      return get200Response({ count: unfollowdata.count,status:unfollowdata.status });
+    } catch (error) {
+      return get500Response(error as Error);
     }
   }
 }

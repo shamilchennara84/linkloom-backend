@@ -67,7 +67,7 @@ export class PostRepository implements IPostRepo {
       { $match: { postId: postid } },
       { $group: { _id: "$postId", count: { $sum: 1 } } },
     ]);
-    console.log(likeCount);
+   
 
     return likeCount[0];
   }

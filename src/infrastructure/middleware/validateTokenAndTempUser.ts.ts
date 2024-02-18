@@ -4,13 +4,13 @@ import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import { TempUserRepository } from "../repositories/tempUserRepository";
 import { ITempUserRes } from "../../interfaces/Schema/tempUserSchema";
 
-export interface RequestWithUser extends Request {
+export interface RequestWithTempUser extends Request {
   user?: ITempUserRes;
 }
 
 const tempUserRepository = new TempUserRepository();
 
-export const validateTokenAndTempUser = async (req: RequestWithUser, res: Response, next: NextFunction) => {
+export const validateTokenAndTempUser = async (req: RequestWithTempUser, res: Response, next: NextFunction) => {
   try {
     const authToken = req.headers.authorization;
 
