@@ -1,0 +1,27 @@
+import { Schema } from "mongoose";
+import { ID } from "../common";
+import { IUser } from "./userSchema";
+
+
+export interface IConversation {
+  members: ID[];
+}
+
+export interface IChatHistoryItem extends IChatReq {
+  sendersInfo: IUser;
+  
+}
+
+// Interface for Chat document
+export interface IChatReq {
+  conversationId: ID;
+  senderId: ID;
+  recieverId: ID;
+  content: string;
+  createdAt: Date;
+  messageType: string;
+  read: boolean;
+}
+export interface IChatRes extends IChatReq {
+  _id: Schema.Types.ObjectId;
+}

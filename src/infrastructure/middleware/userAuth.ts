@@ -20,7 +20,7 @@ export const userAuth = async (req: RequestWithUser, res: Response, next: NextFu
      
       const userData = await userRepository.findById(decoded.userId);
 
-    
+    // console.log(userData);
       if (userData !== null) {
         if (userData.isBlocked) {
           res.status(FORBIDDEN).json({ message: "You are blocked" });

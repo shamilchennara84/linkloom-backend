@@ -15,7 +15,8 @@ tokenRouter.get("/", (req: Request, res: Response) => {
         refreshToken.slice(7),
         process.env.JWT_SECRET_KEY as string
       ) as JwtPayload;
-      const accessToken = jwtToken.generateAccessToken(decoded.id);
+   
+      const accessToken = jwtToken.generateAccessToken(decoded.userId);
       res.status(STATUS_CODES.OK).json({
         status: STATUS_CODES.OK,
         message: "Success",

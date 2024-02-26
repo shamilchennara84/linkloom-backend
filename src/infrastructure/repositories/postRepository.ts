@@ -127,7 +127,7 @@ export class PostRepository implements IPostRepo {
       { $unwind: "$user" },
       { $sort: { createdAt: 1 } },
     ]);
-    console.log(comments);
+    console.log(comments[0].user);
     return comments;
   }
 }

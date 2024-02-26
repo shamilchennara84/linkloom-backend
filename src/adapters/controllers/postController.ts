@@ -79,7 +79,6 @@ export class PostController {
 
   async createComment(req: Request, res: Response) {
     try {
-      console.log(req.body);
       const {
         text: { comment },
         createdAt,
@@ -109,7 +108,4 @@ export class PostController {
       console.log(error);
     }
   }
-
-
- 
 }

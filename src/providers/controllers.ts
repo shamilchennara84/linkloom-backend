@@ -12,6 +12,10 @@ import { PostUseCase } from "../useCases/postUseCase";
 import { AdminController } from "../adapters/controllers/adminController";
 import { AdminUseCase } from "../useCases/adminUseCase";
 import { AdminRepository } from "../infrastructure/repositories/adminRepository";
+import { ChatUseCase } from "../useCases/chatUseCase";
+import { ChatRepository } from "../infrastructure/repositories/chatRepository";
+import { ChatController } from "../adapters/controllers/chatController";
+
 
 const userRepository = new UserRepository();
 const adminRepository = new AdminRepository();
@@ -21,15 +25,19 @@ const encrypt = new Encrypt();
 const otpGenerator = new GenerateOTP();
 const mailSender = new MailSender();
 const postRepository = new PostRepository();
+const chatRepository = new ChatRepository();
 
 
 
 const userUseCase = new UserUseCase(encrypt, jwttoken, userRepository, tempUserRepository, mailSender);
 const postUseCase = new PostUseCase(postRepository);
 const adminUseCase = new AdminUseCase(encrypt, adminRepository, jwttoken);
+export const chatUseCase = new ChatUseCase(chatRepository);
+
 
 
 
 export const uController = new UserController(userUseCase, otpGenerator, encrypt);
 export const postController = new PostController(postUseCase);
+export const chatController = new ChatController(chatUseCase);
 export const aController = new AdminController(adminUseCase, userUseCase);

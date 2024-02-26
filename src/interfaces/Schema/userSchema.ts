@@ -54,10 +54,15 @@ export interface IUserProfileData extends IUserRes {
 }
 
 // api response for single user as data
-export interface IApiUserRes {
+export interface IApiUserProfileRes {
   status: number;
   message: string;
   data: IUserProfileData | null;
+}
+export interface IApiUserRes {
+  status: number;
+  message: string;
+  data: IUser | null;
 }
 
 export interface IApiUserAuthRes extends IApiUserRes {

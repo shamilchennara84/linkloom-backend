@@ -13,6 +13,7 @@ import { IFollowCountRes, IFollowerReq } from "../../interfaces/Schema/followerS
 import { getErrorResponse } from "../../infrastructure/helperfunctions/response";
 
 export class UserController {
+
   constructor(private userUseCase: UserUseCase, private otpGenerator: GenerateOTP, private encrypt: Encrypt) {}
 
   async userRegister(req: Request, res: Response) {

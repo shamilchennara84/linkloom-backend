@@ -4,6 +4,8 @@ import { IPostRes } from "./Schema/postSchema";
 import { ILikeCountRes } from "./Schema/likeSchema";
 import { ICommentSchema } from "./Schema/commentSchema";
 import {  IFollowCountRes, IFollowStatus } from "./Schema/followerSchema";
+import {IChatHistoryItem, IConversation } from "./Schema/chatSchema";
+
 
 export type ID = Schema.Types.ObjectId
 
@@ -30,6 +32,9 @@ export type AllResTypes =
   | ICommentSchema
   | IFollowCountRes
   | IFollowStatus
+  | IConversation
+  | IConversation[]
+  | IChatHistoryItem[]
   | null;
 
 export interface IApiRes<T extends AllResTypes> {
