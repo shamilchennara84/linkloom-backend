@@ -59,23 +59,6 @@ const app = (0, app_1.createServer)();
                     console.error("Error while sending message:", error);
                 }
             }));
-            // socket.on("create-conversation", async (members: IUser[]) => {
-            //   try {
-            //     const conversation = await chatUseCase.createConversation(members);
-            //     // Emit the conversation creation event to all members
-            //     members.forEach((member) => {
-            //       const id = member._id.toString();
-            //       if (userSockets.has(id)) {
-            //         const socketId = userSockets.get(id);
-            //         if (socketId) {
-            //           socket.to(socketId.toString()).emit("conversation-created", conversation);
-            //         }
-            //       }
-            //     });
-            //   } catch (error) {
-            //     console.error("Error while creating conversation:", error);
-            //   }
-            // });
             socket.on("disconnect", () => {
                 console.log("User disconnected");
                 userSockets.delete(userId);
@@ -88,10 +71,3 @@ const app = (0, app_1.createServer)();
     }
 })
     .catch((err) => console.error("Error while connecting to database:", err));
-// socket.on("typing", (data: { senderId: string; recipientId: string }) => {
-//   const recipientId = data.recipientId.toString();
-//   const recipientSocketId = userSockets.get(recipientId);
-//   if (recipientSocketId) {
-//     socket.to(recipientSocketId).emit("typing", data);
-//   }
-// });

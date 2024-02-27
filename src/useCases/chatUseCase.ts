@@ -1,8 +1,8 @@
 import ConversationModel from "../entities/models/conversationModel";
 import { get200Response, get500Response } from "../infrastructure/helperfunctions/response";
 import { ChatRepository } from "../infrastructure/repositories/chatRepository";
-import { IChatHistoryItem, IChatReq, IConversation } from "../interfaces/Schema/chatSchema";
-import {  IUserRes } from "../interfaces/Schema/userSchema";
+import { IChatHistoryItem, IChatReq, IConversation, IConversationListItem } from "../interfaces/Schema/chatSchema";
+import { IUserRes } from "../interfaces/Schema/userSchema";
 import { IApiRes, ID } from "../interfaces/common";
 
 export class ChatUseCase {
@@ -29,6 +29,15 @@ export class ChatUseCase {
       const newConversation = new ConversationModel({ members });
       const savedConversation = await newConversation.save();
       return get200Response(savedConversation);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async getConversations(userId: string): Promise<IApiRes<IConversationListItem[] | null>> {
+    try {
+   const chatHistoryItems = await this.chatRepository.getConversations(userId);
+  return get200Response(chatHistoryItems)
     } catch (error) {
       return get500Response(error as Error);
     }

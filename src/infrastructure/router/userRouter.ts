@@ -43,6 +43,7 @@ userRouter
   
   //Conversation Users Routes
   userRouter.get("/conversation/:userId",userAuth,(req,res)=>chatController.getConversation(req,res))
+  userRouter.get("/conversations/",userAuth,(req,res)=>chatController.getConversations(req,res))
   userRouter.get("/followedUsers", userAuth, (req, res) => chatController.getFollowedUser(req, res));
   userRouter.get("/chat/history/:roomId", userAuth, (req, res) => chatController.getChatHistory(req, res));
 

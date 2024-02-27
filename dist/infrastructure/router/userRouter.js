@@ -38,6 +38,7 @@ userRouter
     .post(userAuth_1.userAuth, (req, res) => controllers_1.uController.followUser(req, res));
 //Conversation Users Routes
 userRouter.get("/conversation/:userId", userAuth_1.userAuth, (req, res) => controllers_1.chatController.getConversation(req, res));
+userRouter.get("/conversations/", userAuth_1.userAuth, (req, res) => controllers_1.chatController.getConversations(req, res));
 userRouter.get("/followedUsers", userAuth_1.userAuth, (req, res) => controllers_1.chatController.getFollowedUser(req, res));
 userRouter.get("/chat/history/:roomId", userAuth_1.userAuth, (req, res) => controllers_1.chatController.getChatHistory(req, res));
 exports.default = userRouter;

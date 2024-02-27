@@ -27,6 +27,16 @@ export class ChatController {
     }
   }
 
+  async getConversations(req: RequestWithUser, res: Response){
+    try {
+      const userId = req.userid as unknown as string;
+      const apiRes = await this.chatUseCase.getConversations(userId);
+      res.status(apiRes.status).json(apiRes);
+    } catch (error) {
+     console.log(error);
+    }
+  }
+
   async getChatHistory(req: Request, res: Response) {
     try {
       const conversationId = req.params.roomId;
