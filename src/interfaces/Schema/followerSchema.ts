@@ -24,3 +24,11 @@ export interface IFollowStatus {
   status: FollowingStatus;
 }
 
+export interface IUserSearchItem {
+  userId: string;
+  username: string;
+  userfname: string;
+  followers: number;
+  isFollowing: boolean;
+}
+

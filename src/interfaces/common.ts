@@ -3,7 +3,7 @@ import { IUserRes, IUsersAndCount } from "./Schema/userSchema";
 import { IPostRes } from "./Schema/postSchema";
 import { ILikeCountRes } from "./Schema/likeSchema";
 import { ICommentSchema } from "./Schema/commentSchema";
-import {  IFollowCountRes, IFollowStatus } from "./Schema/followerSchema";
+import {  IFollowCountRes, IFollowStatus, IUserSearchItem } from "./Schema/followerSchema";
 import {IChatHistoryItem, IConversation, IConversationListItem } from "./Schema/chatSchema";
 
 
@@ -35,7 +35,8 @@ export type AllResTypes =
   | IConversation
   | IConversation[]
   | IChatHistoryItem[]
-  |IConversationListItem[]
+  | IConversationListItem[]
+  | IUserSearchItem[]
   | null;
 
 export interface IApiRes<T extends AllResTypes> {

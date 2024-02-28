@@ -240,4 +240,64 @@ export class UserRepository implements IUserRepo {
 
     return result[0];
   }
+
+  async searchUsers(userId: ID, query: string) {
+    const id = new Types.ObjectId(userId as unknown as string);
+    console.log(id);
+    const regex = new RegExp(query, "i");
+    const result = await userModel.aggregate([
+      { $match: { $or: [{ username: { $regex: regex } }, { fullname: { $regex: regex } }], _id: { $ne: id } } },
+      {
+        $lookup: {
+          from: "followers",
+          let: { userId: "$_id" },
+          pipeline: [{ $match: { $expr: { $eq: ["$followingUserId", "$$userId"] } } }, { $count: "followers" }],
+          as: "followersCount",
+        },
+      },
+      {
+        $addFields: {
+          followers: { $arrayElemAt: ["$followersCount.followers", 0] },
+        },
+      },
+
+      {
+        $lookup: {
+          from: "followers",
+          let: { userId: id },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$followerUserId", "$$userId"] }, { $eq: ["$followingUserId", "$_id"] }],
+                },
+              },
+            },
+            { $count: "isFollowing" },
+          ],
+          as: "isFollowing",  /////////FIXME: bugggggggggg fix required
+        },
+      },
+      {
+        $addFields: {
+          isFollowing: { $arrayElemAt: ["$isFollowing.isFollowing", 0] },
+        },
+      },
+      {
+        $project: {
+          _id:1,
+          username: 1,
+          userfname: "$fullname",
+          profilePic: 1,
+          followers: 1,
+          isFollowing: 1,
+        },
+      },
+    ]);
+
+    result.forEach((val) => {
+      console.log(val);
+    });
+    return result;
+  }
 }

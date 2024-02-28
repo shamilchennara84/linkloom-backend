@@ -6,6 +6,7 @@ import { userAuth } from "../middleware/userAuth";
 import { userRegisterValidation } from "../middleware/userValidation";
 import { validateTokenAndTempUser } from "../middleware/validateTokenAndTempUser.ts";
 
+
 // Creating an instance of express router
 const userRouter = express.Router();
 
@@ -47,7 +48,8 @@ userRouter
   userRouter.get("/followedUsers", userAuth, (req, res) => chatController.getFollowedUser(req, res));
   userRouter.get("/chat/history/:roomId", userAuth, (req, res) => chatController.getChatHistory(req, res));
 
-
+  //usersearch 
+  userRouter.get("/userSearch", userAuth, (req, res) => uController.userSearch(req, res));
 
 
 

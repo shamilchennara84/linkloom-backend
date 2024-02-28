@@ -14,6 +14,7 @@ import { getErrorResponse } from "../../infrastructure/helperfunctions/response"
 
 export class UserController {
 
+
   constructor(private userUseCase: UserUseCase, private otpGenerator: GenerateOTP, private encrypt: Encrypt) {}
 
   async userRegister(req: Request, res: Response) {
@@ -154,40 +155,48 @@ export class UserController {
     res.status(apiRes.status).json(apiRes);
   }
 
-  // async resendOTP(req: Request, res: Response) {
-  //   try {
-  //     const authToken = req.headers.authorization;
-  //     if (authToken) {
-  //       const decode = jwt.verify(
-  //         authToken.slice(7),
-  //         process.env.JWT_SECRET_KEY as string
-  //       ) as JwtPayload;
-  //       const tempUser = await this.userUseCase.findTempUserById(decode.id);
-  //       if (tempUser) {
-  //         const OTP = this.otpGenerator.generateOTP();
-  //         console.log(OTP, "new resend otp");
-  //         await this.userUseCase.sendmailOTP(
-  //           tempUser._id,
-  //           tempUser.fullname,
-  //           tempUser.email,
-  //           OTP
-  //         );
-  //         res.status(STATUS_CODES.OK).json({ message: "OTP has been sent" });
-  //       } else {
-  //         res
-  //           .status(STATUS_CODES.UNAUTHORIZED)
-  //           .json({ message: "user timeout, register again" });
-  //       }
-  //     } else {
-  //       res
-  //         .status(STATUS_CODES.UNAUTHORIZED)
-  //         .json({ message: "AuthToken missing" });
-  //     }
-  //     console.log("OTP resent successfully");
-  //     res.status(200).json({ message: "OTP has been sent" });
-  //   } catch (error) {
-  //     console.error("Error while resending OTP:", error);
-  //     res.status(500).json({ error: "Internal server error" });
-  //   }
-  // }
+    async userSearch(req: RequestWithUser,res:Response) {
+      const userId = req.userid as ID;
+      const query = req.query?.query as string
+       const apiRes = await this.userUseCase.userSearch(userId, query);
+         res.status(apiRes.status).json(apiRes);
+
 }
+
+}
+// async resendOTP(req: Request, res: Response) {
+//   try {
+//     const authToken = req.headers.authorization;
+//     if (authToken) {
+//       const decode = jwt.verify(
+//         authToken.slice(7),
+//         process.env.JWT_SECRET_KEY as string
+//       ) as JwtPayload;
+//       const tempUser = await this.userUseCase.findTempUserById(decode.id);
+//       if (tempUser) {
+//         const OTP = this.otpGenerator.generateOTP();
+//         console.log(OTP, "new resend otp");
+//         await this.userUseCase.sendmailOTP(
+//           tempUser._id,
+//           tempUser.fullname,
+//           tempUser.email,
+//           OTP
+//         );
+//         res.status(STATUS_CODES.OK).json({ message: "OTP has been sent" });
+//       } else {
+//         res
+//           .status(STATUS_CODES.UNAUTHORIZED)
+//           .json({ message: "user timeout, register again" });
+//       }
+//     } else {
+//       res
+//         .status(STATUS_CODES.UNAUTHORIZED)
+//         .json({ message: "AuthToken missing" });
+//     }
+//     console.log("OTP resent successfully");
+//     res.status(200).json({ message: "OTP has been sent" });
+//   } catch (error) {
+//     console.error("Error while resending OTP:", error);
+//     res.status(500).json({ error: "Internal server error" });
+//   }
+// }

@@ -23,7 +23,8 @@ import { MailSender } from "../providers/MailSender";
 import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
 import path from "path";
-import { IFollowCountRes, IFollowStatus, IFollowerReq } from "../interfaces/Schema/followerSchema";
+import { IFollowCountRes, IFollowStatus, IFollowerReq, IUserSearchItem } from "../interfaces/Schema/followerSchema";
+
 
 export class UserUseCase {
   constructor(
@@ -222,7 +223,7 @@ export class UserUseCase {
     try {
       const followersData = await this.userRepository.followUser(followData);
       if (!followersData) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
-      return get200Response({ count: followersData.count,status:followersData.status });
+      return get200Response({ count: followersData.count, status: followersData.status });
     } catch (error) {
       return get500Response(error as Error);
     }
@@ -242,9 +243,18 @@ export class UserUseCase {
 
   async unFollowUser(userId: ID, followerId: ID): Promise<IApiRes<IFollowCountRes | null>> {
     try {
-      const unfollowdata = await this.userRepository.unfollowUser(userId,followerId);
+      const unfollowdata = await this.userRepository.unfollowUser(userId, followerId);
       if (!unfollowdata) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
-      return get200Response({ count: unfollowdata.count,status:unfollowdata.status });
+      return get200Response({ count: unfollowdata.count, status: unfollowdata.status });
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async userSearch(userId: ID, query: string): Promise<IApiRes<IUserSearchItem[] | null>> {
+    try {
+      const usersData = await this.userRepository.searchUsers(userId,query)
+      return get200Response(usersData);
     } catch (error) {
       return get500Response(error as Error);
     }

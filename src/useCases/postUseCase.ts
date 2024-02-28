@@ -27,7 +27,7 @@ export class PostUseCase {
   async fetchUserPosts(userId: ID): Promise<IApiRes<IPostRes[] | null>> {
     try {
       const userPosts = await this.postRepository.fetchUserPosts(userId);
-      console.log("sended the post");
+      
       return get200Response(userPosts);
     } catch (error) {
       return get500Response(error as Error);
@@ -37,7 +37,7 @@ export class PostUseCase {
   async fetchLatestPosts(userId: ID): Promise<IApiRes<IPostUserRes[] | null>> {
     try {
       const userPosts = await this.postRepository.fetchPostsExcludingUserId(userId.toString());
-      console.log("sended the post");
+     
       return get200Response(userPosts);
     } catch (error) {
       return get500Response(error as Error);
