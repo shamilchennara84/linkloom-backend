@@ -1,13 +1,12 @@
 import { Schema } from "mongoose";
-import { IUserRes, IUsersAndCount } from "./Schema/userSchema";
+import { IUserChatSearch, IUserRes, IUsersAndCount } from "./Schema/userSchema";
 import { IPostRes } from "./Schema/postSchema";
 import { ILikeCountRes } from "./Schema/likeSchema";
 import { ICommentSchema } from "./Schema/commentSchema";
-import {  IFollowCountRes, IFollowStatus, IUserSearchItem } from "./Schema/followerSchema";
-import {IChatHistoryItem, IConversation, IConversationListItem } from "./Schema/chatSchema";
+import { IFollowCountRes, IFollowStatus, IUserSearchItem } from "./Schema/followerSchema";
+import { IChatHistoryItem, IConversation, IConversationListItem } from "./Schema/chatSchema";
 
-
-export type ID = Schema.Types.ObjectId
+export type ID = Schema.Types.ObjectId;
 
 export interface ICoords {
   type: "Point";
@@ -37,9 +36,10 @@ export type AllResTypes =
   | IChatHistoryItem[]
   | IConversationListItem[]
   | IUserSearchItem[]
+  | IUserChatSearch[]
   | null;
 
-export interface IApiRes<T extends AllResTypes> {
+export interface IapiResponse<T extends AllResTypes> {
   status: number;
   message: string;
   data: T;

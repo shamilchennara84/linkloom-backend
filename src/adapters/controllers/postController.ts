@@ -21,10 +21,10 @@ export class PostController {
         createdAt: new Date(),
       };
       // Call your use case to save the post
-      const apiRes = await this.postUserCase.savePost(postData);
+      const apiResponse = await this.postUserCase.savePost(postData);
 
       // Respond with the saved post data
-      res.status(apiRes.status).json(apiRes);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
     }
@@ -33,9 +33,9 @@ export class PostController {
   async userPosts(req: Request, res: Response) {
     try {
       const userId: ID = req.params.userId as unknown as ID;
-      const apiRes = await this.postUserCase.fetchUserPosts(userId);
+      const apiResponse = await this.postUserCase.fetchUserPosts(userId);
       // Respond with the saved post data
-      res.status(apiRes.status).json(apiRes);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       // Call your use case or service to save the post
       console.log(error);
@@ -44,10 +44,10 @@ export class PostController {
   async HomePosts(req: Request, res: Response) {
     try {
       const userId: ID = req.params.userId as unknown as ID;
-      const apiRes = await this.postUserCase.fetchLatestPosts(userId);
+      const apiResponse = await this.postUserCase.fetchLatestPosts(userId);
 
       // Respond with the saved post data
-      res.status(apiRes.status).json(apiRes);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       // Call your use case or service to save the post
       console.log(error);
@@ -58,9 +58,9 @@ export class PostController {
     try {
       const userId: ID = req.params.userId as unknown as ID;
       const postId: ID = req.params.postId as unknown as ID;
-      const apiRes = await this.postUserCase.likePost(userId, postId);
+      const apiResponse = await this.postUserCase.likePost(userId, postId);
 
-      res.status(apiRes.status).json(apiRes);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
     }
@@ -69,9 +69,9 @@ export class PostController {
     try {
       const userId: ID = req.params.userId as unknown as ID;
       const postId: ID = req.params.postId as unknown as ID;
-      const apiRes = await this.postUserCase.UnlikePost(userId, postId);
+      const apiResponse = await this.postUserCase.UnlikePost(userId, postId);
 
-      res.status(apiRes.status).json(apiRes);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
     }
@@ -91,8 +91,8 @@ export class PostController {
         text: comment,
         createdAt,
       };
-      const apiRes = await this.postUserCase.saveComment(postComment);
-      res.status(apiRes.status).json(apiRes);
+      const apiResponse = await this.postUserCase.saveComment(postComment);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
     }
@@ -101,9 +101,9 @@ export class PostController {
   async getComments(req: Request, res: Response) {
     try {
       const postId: string = req.params.postId;
-      const apiRes = await this.postUserCase.getComments(postId);
+      const apiResponse = await this.postUserCase.getComments(postId);
 
-      res.status(apiRes.status).json(apiRes);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
     }

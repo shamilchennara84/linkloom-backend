@@ -12,7 +12,7 @@ export class ChatRepository implements IChatRepo {
   async saveChat(chatData: IChatReq): Promise<IChatHistoryItem> {
     const newChat = new ChatModel(chatData);
     const savedChat = await newChat.save();
-    const chatRes = await ChatModel.aggregate([
+    const chatResponse = await ChatModel.aggregate([
       {
         $match: { _id: savedChat._id },
       },
@@ -25,7 +25,7 @@ export class ChatRepository implements IChatRepo {
         },
       },
     ]);
-    return chatRes[0];
+    return chatResponse[0];
   }
   async findAllFollowers(userId: ID): Promise<IUserRes[] | null> {
     const usersData = await followerModel.aggregate([
@@ -43,15 +43,25 @@ export class ChatRepository implements IChatRepo {
       {
         $project: {
           _id: 0,
-          followedUser: 1,
+          followedUser: {
+            $map: {
+              input: "$followedUser",
+              as: "user",
+              in: {
+                _id: "$$user._id",
+                username: "$$user.username",
+                fullname: "$$user.fullname",
+              },
+            },
+          },
         },
       },
     ]);
-    // console.log(usersData,"userdata");
+    console.log(usersData, "userdata");
 
     if (usersData && usersData.length !== 0) {
-      // console.log("usersdata", usersData[0]);
-      return usersData[0].followedUser;
+      const followersData = usersData.map((val) => val.followedUser);
+      return followersData.flat();
     } else {
       return [];
     }
@@ -78,12 +88,13 @@ export class ChatRepository implements IChatRepo {
 
   async getConversations(userId: string): Promise<IConversationListItem[]> {
     try {
-      console.log("getconversations");
+      console.log("Fetching conversations...");
+
       const conversations = await ConversationModel.aggregate([
         { $match: { members: { $in: [userId] } } },
         {
           $lookup: {
-            from: "chats", // Assuming "chats" is the collection name for chat messages
+            from: "chats",
             localField: "_id",
             foreignField: "conversationId",
             as: "chatMessages",
@@ -98,7 +109,10 @@ export class ChatRepository implements IChatRepo {
                   input: "$chatMessages",
                   as: "chat",
                   cond: {
-                    $and: [{ $eq: ["$$chat.read", false] }, { $eq: ["$$chat.recieverId", userId] }],
+                    $and: [
+                      { $eq: ["$$chat.read", false] },
+                      { $eq: ["$$chat.recieverId", new mongoose.Types.ObjectId(userId)] },
+                    ],
                   },
                 },
               },
@@ -106,9 +120,21 @@ export class ChatRepository implements IChatRepo {
           },
         },
         {
+          $addFields: {
+            membersExcludingCurrentUser: {
+              $filter: {
+                input: "$members",
+                as: "member",
+                cond: { $ne: ["$$member", new mongoose.Types.ObjectId(userId)] },
+              },
+            },
+          },
+        },
+
+        {
           $lookup: {
             from: "users",
-            localField: "members",
+            localField: "membersExcludingCurrentUser",
             foreignField: "_id",
             as: "memberDetails",
           },
@@ -121,7 +147,7 @@ export class ChatRepository implements IChatRepo {
         },
         {
           $project: {
-            members:1,
+            members: 1,
             lastChat: 1,
             unreadCount: 1,
             otherMemberUsername: 1,
@@ -129,13 +155,12 @@ export class ChatRepository implements IChatRepo {
           },
         },
       ]);
-
-      console.log(conversations, "yey");
+      console.log(conversations);
 
       return conversations || [];
     } catch (error) {
       console.error("Error fetching conversations:", error);
-      return []; // Return empty array in case of an error
+      return [];
     }
   }
 }

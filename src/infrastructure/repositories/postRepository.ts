@@ -67,7 +67,6 @@ export class PostRepository implements IPostRepo {
       { $match: { postId: postid } },
       { $group: { _id: "$postId", count: { $sum: 1 } } },
     ]);
-   
 
     return likeCount[0];
   }
@@ -97,7 +96,7 @@ export class PostRepository implements IPostRepo {
     const newComment = new commentModel(postComment);
 
     const savedComment = await newComment.save();
-    const response =  await commentModel.aggregate([
+    const response = await commentModel.aggregate([
       { $match: { _id: savedComment._id } }, // Match the specific comment by its _id
       {
         $lookup: {
@@ -110,7 +109,7 @@ export class PostRepository implements IPostRepo {
       { $unwind: "$user" },
       { $limit: 1 }, // Limit the result to one comment
     ]);
-    return response[0]
+    return response[0];
   }
 
   async getAllComments(postId: string) {
@@ -127,8 +126,6 @@ export class PostRepository implements IPostRepo {
       { $unwind: "$user" },
       { $sort: { createdAt: 1 } },
     ]);
-    console.log(comments[0].user);
     return comments;
   }
 }
-

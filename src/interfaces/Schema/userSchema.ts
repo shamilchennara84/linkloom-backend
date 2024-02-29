@@ -29,6 +29,22 @@ export interface IUserUpdate
     IUserRes,
     "_id" | "email" | "password" | "isBlocked" | 'username' | 'isGoogleAuth' | 'isPremier' 
   > {}
+export interface IUserChatSearch
+  extends Omit<
+    IUserRes,
+    | "email"
+    | "password"
+    | "isBlocked"
+    | "isGoogleAuth"
+    | "isPremier"
+    | "dob"
+    | "mobile"
+    | "premiumExpiry"
+    | "wallet"
+    | "visibility"
+    | "coords"
+    | "address"
+  > {}
 
 // for social auth credentials
 export interface IUserSocialAuth {

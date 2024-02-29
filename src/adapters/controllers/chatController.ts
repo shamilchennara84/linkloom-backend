@@ -9,8 +9,8 @@ export class ChatController {
   async getFollowedUser(req: RequestWithUser, res: Response) {
     try {
       const userId = req.userid as ID;
-      const apiRes = await this.chatUseCase.getFollowedUsers(userId);
-      res.status(apiRes.status).json(apiRes);
+      const apiResponse = await this.chatUseCase.getFollowedUsers(userId);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
     }
@@ -20,28 +20,28 @@ export class ChatController {
     try {
       const userId = req.userid as unknown as string;
       const secondUserId = req.params.userId;
-      const apiRes = await this.chatUseCase.getConversation([userId, secondUserId]);
-      res.status(apiRes.status).json(apiRes);
+      const apiResponse = await this.chatUseCase.getConversation([userId, secondUserId]);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
     }
   }
 
-  async getConversations(req: RequestWithUser, res: Response){
+  async getConversations(req: RequestWithUser, res: Response) {
     try {
       const userId = req.userid as unknown as string;
-      const apiRes = await this.chatUseCase.getConversations(userId);
-      res.status(apiRes.status).json(apiRes);
+      const apiResponse = await this.chatUseCase.getConversations(userId);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
-     console.log(error);
+      console.log(error);
     }
   }
 
   async getChatHistory(req: Request, res: Response) {
     try {
       const conversationId = req.params.roomId;
-      const apiRes = await this.chatUseCase.getChats(conversationId);
-      res.status(apiRes.status).json(apiRes);
+      const apiResponse = await this.chatUseCase.getChats(conversationId);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
     }

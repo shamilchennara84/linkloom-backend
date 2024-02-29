@@ -9,8 +9,8 @@ export interface IConversation {
 export interface IConversationListItem extends IConversation {
   unreadCount: number;
   lastChat: IChatHistoryItem;
-   otherMemberUsername: string
-   otherMemberProfilePic: string
+  otherMemberUsername: string;
+  otherMemberProfilePic: string;
 }
 
 export interface IChatHistoryItem extends IChatReq {
@@ -27,6 +27,6 @@ export interface IChatReq {
   messageType: string;
   read: boolean;
 }
-export interface IChatRes extends IChatReq {
+export interface IchatResponse extends IChatReq {
   _id: Schema.Types.ObjectId;
 }

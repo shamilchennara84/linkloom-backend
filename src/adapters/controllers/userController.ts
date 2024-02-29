@@ -4,7 +4,7 @@ import { GenerateOTP } from "../../providers/otpGenerator";
 import { IUserAuth, IUserUpdate } from "../../interfaces/Schema/userSchema";
 import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import { ITempUserReq } from "../../interfaces/Schema/tempUserSchema";
-import { IApiRes, ID } from "../../interfaces/common";
+import { IapiResponse, ID } from "../../interfaces/common";
 import { Request, Response } from "express-serve-static-core";
 import { RequestWithTempUser } from "../../infrastructure/middleware/validateTokenAndTempUser.ts";
 
@@ -13,8 +13,6 @@ import { IFollowCountRes, IFollowerReq } from "../../interfaces/Schema/followerS
 import { getErrorResponse } from "../../infrastructure/helperfunctions/response";
 
 export class UserController {
-
-
   constructor(private userUseCase: UserUseCase, private otpGenerator: GenerateOTP, private encrypt: Encrypt) {}
 
   async userRegister(req: Request, res: Response) {
@@ -99,28 +97,28 @@ export class UserController {
 
   async userProfile(req: Request, res: Response) {
     const userId = req.params.userId as unknown as ID;
-    const apiRes = await this.userUseCase.getUserData(userId);
-    res.status(apiRes.status).json(apiRes);
+    const apiResponse = await this.userUseCase.getUserData(userId);
+    res.status(apiResponse.status).json(apiResponse);
   }
 
   async updateProfile(req: Request, res: Response) {
     const user = req.body as IUserUpdate;
     const userId: ID = req.params.userId as unknown as ID;
-    const apiRes = await this.userUseCase.updateUserData(userId, user);
-    res.status(apiRes.status).json(apiRes);
+    const apiResponse = await this.userUseCase.updateUserData(userId, user);
+    res.status(apiResponse.status).json(apiResponse);
   }
 
   async updateUserProfileDp(req: Request, res: Response) {
     const userId: ID = req.params.userId as unknown as ID;
     const fileName = req.file?.filename;
-    const apiRes = await this.userUseCase.updateUserProfilePic(userId, fileName);
-    res.status(apiRes.status).json(apiRes);
+    const apiResponse = await this.userUseCase.updateUserProfilePic(userId, fileName);
+    res.status(apiResponse.status).json(apiResponse);
   }
 
   async removeUserProfileDp(req: Request, res: Response) {
     const userId: ID = req.params.userId as unknown as ID;
-    const apiRes = await this.userUseCase.removeUserProfileDp(userId);
-    res.status(apiRes.status).json(apiRes);
+    const apiResponse = await this.userUseCase.removeUserProfileDp(userId);
+    res.status(apiResponse.status).json(apiResponse);
   }
 
   async followUser(req: RequestWithUser, res: Response) {
@@ -132,17 +130,20 @@ export class UserController {
       followingUserId: followerId,
       isApproved: true,
     };
-    let apiRes: IApiRes<IFollowCountRes | null> = getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid status");
+    let apiResponse: IapiResponse<IFollowCountRes | null> = getErrorResponse(
+      STATUS_CODES.BAD_REQUEST,
+      "Invalid status"
+    );
     if (status === "Follow") {
-      apiRes = await this.userUseCase.followUser(followData);
+      apiResponse = await this.userUseCase.followUser(followData);
     } else if (status === "Request") {
       followData.isApproved = false;
-      apiRes = await this.userUseCase.followUser(followData);
+      apiResponse = await this.userUseCase.followUser(followData);
     } else if (status === "Following") {
-      apiRes = await this.userUseCase.unFollowUser(userId, followerId);
+      apiResponse = await this.userUseCase.unFollowUser(userId, followerId);
     }
-    console.log(apiRes);
-    res.status(apiRes.status).json(apiRes);
+    console.log(apiResponse);
+    res.status(apiResponse.status).json(apiResponse);
   }
 
   async getFollowStat(req: RequestWithUser, res: Response) {
@@ -150,19 +151,17 @@ export class UserController {
     const userId = req.userid as ID;
     const followerId = req.params.userId as unknown as ID;
 
-    const apiRes = await this.userUseCase.followStatus(userId, followerId);
+    const apiResponse = await this.userUseCase.followStatus(userId, followerId);
 
-    res.status(apiRes.status).json(apiRes);
+    res.status(apiResponse.status).json(apiResponse);
   }
 
-    async userSearch(req: RequestWithUser,res:Response) {
-      const userId = req.userid as ID;
-      const query = req.query?.query as string
-       const apiRes = await this.userUseCase.userSearch(userId, query);
-         res.status(apiRes.status).json(apiRes);
-
-}
-
+  async userSearch(req: RequestWithUser, res: Response) {
+    const userId = req.userid as ID;
+    const query = req.query?.query as string;
+    const apiResponse = await this.userUseCase.userSearch(userId, query);
+    res.status(apiResponse.status).json(apiResponse);
+  }
 }
 // async resendOTP(req: Request, res: Response) {
 //   try {

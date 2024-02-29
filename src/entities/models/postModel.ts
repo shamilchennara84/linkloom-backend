@@ -1,9 +1,6 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
  import { IPostReq } from "../../interfaces/Schema/postSchema";
 
-
-
-
 const postSchema: Schema = new Schema<IPostReq & Document>(
   {
     userId: {

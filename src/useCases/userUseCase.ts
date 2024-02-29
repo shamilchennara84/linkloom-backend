@@ -18,13 +18,12 @@ import {
   IApiUserRes,
   IUserRes,
 } from "../interfaces/Schema/userSchema";
-import { IApiRes, ID } from "../interfaces/common";
+import { IapiResponse, ID } from "../interfaces/common";
 import { MailSender } from "../providers/MailSender";
 import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
 import path from "path";
 import { IFollowCountRes, IFollowStatus, IFollowerReq, IUserSearchItem } from "../interfaces/Schema/followerSchema";
-
 
 export class UserUseCase {
   constructor(
@@ -150,7 +149,7 @@ export class UserUseCase {
     page: number,
     limit: number,
     searchQuery: string | undefined
-  ): Promise<IApiRes<IUsersAndCount | null>> {
+  ): Promise<IapiResponse<IUsersAndCount | null>> {
     try {
       if (isNaN(page)) page = 1;
       if (isNaN(limit)) limit = 10;
@@ -219,7 +218,7 @@ export class UserUseCase {
     }
   }
 
-  async followUser(followData: IFollowerReq): Promise<IApiRes<IFollowCountRes | null>> {
+  async followUser(followData: IFollowerReq): Promise<IapiResponse<IFollowCountRes | null>> {
     try {
       const followersData = await this.userRepository.followUser(followData);
       if (!followersData) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
@@ -229,7 +228,7 @@ export class UserUseCase {
     }
   }
 
-  async followStatus(userId: ID, followerId: ID): Promise<IApiRes<IFollowStatus | null>> {
+  async followStatus(userId: ID, followerId: ID): Promise<IapiResponse<IFollowStatus | null>> {
     try {
       const followStatusData = await this.userRepository.followStatus(userId, followerId);
       if (!followStatusData) {
@@ -241,7 +240,7 @@ export class UserUseCase {
     }
   }
 
-  async unFollowUser(userId: ID, followerId: ID): Promise<IApiRes<IFollowCountRes | null>> {
+  async unFollowUser(userId: ID, followerId: ID): Promise<IapiResponse<IFollowCountRes | null>> {
     try {
       const unfollowdata = await this.userRepository.unfollowUser(userId, followerId);
       if (!unfollowdata) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
@@ -251,9 +250,9 @@ export class UserUseCase {
     }
   }
 
-  async userSearch(userId: ID, query: string): Promise<IApiRes<IUserSearchItem[] | null>> {
+  async userSearch(userId: ID, query: string): Promise<IapiResponse<IUserSearchItem[] | null>> {
     try {
-      const usersData = await this.userRepository.searchUsers(userId,query)
+      const usersData = await this.userRepository.searchUsers(userId, query);
       return get200Response(usersData);
     } catch (error) {
       return get500Response(error as Error);

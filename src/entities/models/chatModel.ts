@@ -1,5 +1,5 @@
 import mongoose, { Model, Schema } from "mongoose";
-import { IChatReq, IChatRes } from "../../interfaces/Schema/chatSchema";
+import { IChatReq, IchatResponse } from "../../interfaces/Schema/chatSchema";
 
 const chatSchema: Schema = new Schema<IChatReq & Document>(
   {
@@ -40,6 +40,6 @@ const chatSchema: Schema = new Schema<IChatReq & Document>(
   { timestamps: true }
 );
 
-const ChatModel: Model<IChatRes & Document> = mongoose.model<IChatRes & Document>("Chat", chatSchema);
+const ChatModel: Model<IchatResponse & Document> = mongoose.model<IchatResponse & Document>("Chat", chatSchema);
 
 export default ChatModel;
