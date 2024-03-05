@@ -2,14 +2,12 @@ import { STATUS_CODES } from "../constants/httpStatusCodes";
 import { get200Response, get500Response } from "../infrastructure/helperfunctions/response";
 import { AdminRepository } from "../infrastructure/repositories/adminRepository";
 
-
 import { IApiAdminAuthRes, IUserPerMonth, IUserPerYear } from "../interfaces/Schema/adminSchema";
 import { IPostPerMonth } from "../interfaces/Schema/postSchema";
-import { adminCardData } from "../interfaces/Schema/userSchema";
+import { IAdminCardData } from "../interfaces/Schema/userSchema";
 import { IapiResponse } from "../interfaces/common";
 import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
-
 
 export class AdminUseCase {
   constructor(
@@ -87,7 +85,7 @@ export class AdminUseCase {
     }
   }
 
-  async getadminCardData(): Promise<IapiResponse<adminCardData | null>> {
+  async getIAdminCardData(): Promise<IapiResponse<IAdminCardData | null>> {
     try {
       const cardData = await this.adminRepository.getCardData();
       return get200Response(cardData);
