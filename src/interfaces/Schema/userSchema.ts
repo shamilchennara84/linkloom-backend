@@ -91,11 +91,12 @@ export interface IApiUsersRes {
 export interface IUsersAndCount {
   users: IUserRes[];
   userCount: number;
-}
+} 
 
-export interface IAdminCardData {
+ export interface IAdminCardData {
   ActiveUser: number;
   Posts: number;
   Reports: number;
   DeletedUser: number;
 }
+
