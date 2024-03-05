@@ -1,6 +1,5 @@
 import { ICoords, ID, IUserAddress } from "../common";
 
-
 //Interface for userSchema
 export interface IUser {
   _id: ID;
@@ -19,16 +18,12 @@ export interface IUser {
   visibility: "public" | "private";
   coords?: ICoords;
   address?: IUserAddress;
-
 }
 
 export interface IUserRes extends IUser {}
 
 export interface IUserUpdate
-  extends Omit<
-    IUserRes,
-    "_id" | "email" | "password" | "isBlocked" | 'username' | 'isGoogleAuth' | 'isPremier' 
-  > {}
+  extends Omit<IUserRes, "_id" | "email" | "password" | "isBlocked" | "username" | "isGoogleAuth" | "isPremier"> {}
 export interface IUserChatSearch
   extends Omit<
     IUserRes,
@@ -48,18 +43,18 @@ export interface IUserChatSearch
 
 // for social auth credentials
 export interface IUserSocialAuth {
-    fullname: string
-    email: string
-    profilePic?: string
+  fullname: string;
+  email: string;
+  profilePic?: string;
 }
 
 // auth credentials
 export interface IUserAuth {
-    fullname: string
-    username:string
-    email: string
-    mobile:string
-    password: string
+  fullname: string;
+  username: string;
+  email: string;
+  mobile: string;
+  password: string;
 }
 
 // api response for single user as data
@@ -82,20 +77,26 @@ export interface IApiUserRes {
 }
 
 export interface IApiUserAuthRes extends IApiUserRes {
-    accessToken: string
-    refreshToken: string
+  accessToken: string;
+  refreshToken: string;
 }
 
 // api response for multiple users as data
 export interface IApiUsersRes {
-    status: number
-    message: string
-    data: IUserRes[] | null
+  status: number;
+  message: string;
+  data: IUserRes[] | null;
 }
 
 export interface IUsersAndCount {
-    users: IUserRes[],
-    userCount: number
-}
+  users: IUserRes[];
+  userCount: number;
+} 
 
+ export interface IAdminCardData {
+  ActiveUser: number;
+  Posts: number;
+  Reports: number;
+  DeletedUser: number;
+}
 

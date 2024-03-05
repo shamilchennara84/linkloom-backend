@@ -1,5 +1,5 @@
 import { IAdminRepo } from "../../interfaces/repos/adminRepo";
-import { IAdmin, IUserPerMonth, IUserPerYear, adminCardData } from "../../interfaces/Schema/adminSchema";
+import { IAdmin, IUserPerMonth, IUserPerYear, IAdminCardData } from "../../interfaces/Schema/adminSchema";
 import { adminModel } from "../../entities/models/adminModel";
 import { ID } from "../../interfaces/common";
 import userModel from "../../entities/models/userModel";
@@ -7,7 +7,6 @@ import { IPostPerMonth } from "../../interfaces/Schema/postSchema";
 import postModel from "../../entities/models/postModel";
 import likeModel from "../../entities/models/likeModel";
 import commentModel from "../../entities/models/commentModel";
-
 
 interface MonthCount {
   count: number;
@@ -182,13 +181,13 @@ export class AdminRepository implements IAdminRepo {
     return combinedCountsArray;
   }
 
-  async getCardData(): Promise<adminCardData> {
+  async getCardData(): Promise<IAdminCardData> {
     const ActiveUser = await userModel.find().countDocuments();
-    const  Posts = await postModel.find().countDocuments()
-    const  Reports = 34
-    const  DeletedUser = 34
+    const Posts = await postModel.find().countDocuments();
+    const Reports = 34;
+    const DeletedUser = 34;
 
-    return {ActiveUser,Posts,Reports,DeletedUser}
+    return { ActiveUser, Posts, Reports, DeletedUser };
   }
   // async postPerYear() {
   // const postData = await postModel.aggregate([]);
