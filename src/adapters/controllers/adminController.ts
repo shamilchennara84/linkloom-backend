@@ -44,7 +44,7 @@ export class AdminController {
     res.status(apiResponse.status).json(apiResponse);
   }
   async adminCards(req: Request, res: Response) {
-    const apiResponse = await this.adminUseCase.getadminCardData();
+    const apiResponse = await this.adminUseCase.getIAdminCardData();
     res.status(apiResponse.status).json(apiResponse);
   }
 }

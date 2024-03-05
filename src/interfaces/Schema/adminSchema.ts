@@ -6,11 +6,10 @@ export interface IAdmin {
   password: string;
 }
 
-
 export interface IAdminRes {
   email: string;
 }
-    
+
 export interface IApiAdminAuthRes {
   status: number;
   message: string;
@@ -29,7 +28,7 @@ export interface IUserPerYear {
   count: number;
 }
 
-export interface adminCardData {
+export interface IAdminCardData {
   ActiveUser: number;
   Posts: number;
   Reports: number;
