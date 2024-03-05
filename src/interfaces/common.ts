@@ -1,10 +1,11 @@
 import { Schema } from "mongoose";
-import { IUserChatSearch, IUserRes, IUsersAndCount } from "./Schema/userSchema";
-import { IPostRes } from "./Schema/postSchema";
+import { IUserChatSearch, IUserRes, IUsersAndCount} from "./Schema/userSchema";
+import { IPostPerMonth, IPostPerYear, IPostRes } from "./Schema/postSchema";
 import { ILikeCountRes } from "./Schema/likeSchema";
 import { ICommentSchema } from "./Schema/commentSchema";
 import { IFollowCountRes, IFollowStatus, IUserSearchItem } from "./Schema/followerSchema";
 import { IChatHistoryItem, IConversation, IConversationListItem } from "./Schema/chatSchema";
+import { IUserPerMonth, IUserPerYear, adminCardData } from "./Schema/adminSchema";
 
 export type ID = Schema.Types.ObjectId;
 
@@ -37,6 +38,11 @@ export type AllResTypes =
   | IConversationListItem[]
   | IUserSearchItem[]
   | IUserChatSearch[]
+  | IUserPerMonth[]
+  | IUserPerYear[]
+  | IPostPerMonth[]
+  | IPostPerYear[]
+  | adminCardData
   | null;
 
 export interface IapiResponse<T extends AllResTypes> {

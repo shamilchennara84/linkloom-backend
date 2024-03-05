@@ -18,3 +18,20 @@ export interface IApiAdminAuthRes {
   accessToken: string;
   refreshToken: string;
 }
+
+export interface IUserPerMonth {
+  month: string;
+  count: number;
+}
+
+export interface IUserPerYear {
+  year: string;
+  count: number;
+}
+
+export interface adminCardData {
+  ActiveUser: number;
+  Posts: number;
+  Reports: number;
+  DeletedUser: number;
+}
