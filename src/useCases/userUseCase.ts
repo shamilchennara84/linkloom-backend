@@ -54,7 +54,6 @@ export class UserUseCase {
   }
   async saveTempUserDetails(userData: ITempUserReq): Promise<ITempUserRes & { userAuthToken: string }> {
     const user = await this.tempUserRepository.saveUser(userData);
-
     const userAuthToken = this.jwt.generateTempToken(user._id);
     return { ...JSON.parse(JSON.stringify(user)), userAuthToken };
   }

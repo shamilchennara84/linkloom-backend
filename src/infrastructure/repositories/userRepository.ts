@@ -9,8 +9,10 @@ import {
   IFollowStatus,
   IFollowerReq,
   IFollowerRes,
+  IUserSearchItem,
 } from "../../interfaces/Schema/followerSchema";
 import { Types } from "mongoose";
+
 
 export class UserRepository implements IUserRepo {
   async saveUser(user: IUserAuth | IUserSocialAuth): Promise<IUser> {
@@ -241,7 +243,7 @@ export class UserRepository implements IUserRepo {
     return result[0];
   }
 
-  async searchUsers(userId: ID, query: string) {
+  async searchUsers(userId: ID, query: string): Promise<IUserSearchItem[] | null> {
     const id = new Types.ObjectId(userId as unknown as string);
     console.log(id);
     const regex = new RegExp(query, "i");
@@ -275,7 +277,7 @@ export class UserRepository implements IUserRepo {
             },
             { $count: "isFollowing" },
           ],
-          as: "isFollowing",  /////////FIXME: bugggggggggg fix required
+          as: "isFollowing", /////////FIXME: bugggggggggg fix required
         },
       },
       {
@@ -285,7 +287,7 @@ export class UserRepository implements IUserRepo {
       },
       {
         $project: {
-          _id:1,
+          _id: 1,
           username: 1,
           userfname: "$fullname",
           profilePic: 1,
@@ -300,4 +302,6 @@ export class UserRepository implements IUserRepo {
     });
     return result;
   }
+
+  
 }

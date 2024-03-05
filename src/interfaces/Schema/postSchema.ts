@@ -19,3 +19,18 @@ export interface IPostUserRes extends IPostRes {
   likeCount: number;
   likedByCurrentUser: boolean;
 }
+
+export interface IPostPerMonth {
+  monthYear: string;
+  count: number;
+  likes: number;
+  comments: number;
+}
+
+export interface IPostPerYear {
+  year: string;
+  count: number;
+  likes: number;
+  comments: number;
+}
+

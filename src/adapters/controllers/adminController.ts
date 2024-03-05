@@ -24,4 +24,27 @@ export class AdminController {
     const apiResponse = await this.userUseCase.blockUser(req.params.userId as string);
     res.status(apiResponse.status).json(apiResponse);
   }
+
+  async newUserperMonth(req: Request, res: Response) {
+    const apiResponse = await this.adminUseCase.newUsersPerMonth();
+    res.status(apiResponse.status).json(apiResponse);
+  }
+
+  async newUserperYear(req: Request, res: Response) {
+    const apiResponse = await this.adminUseCase.newUsersPerYear();
+    res.status(apiResponse.status).json(apiResponse);
+  }
+  // async postmatrixYear(req: Request, res: Response) {
+  //   const apiResponse = await this.adminUseCase.postmatrixPerYear();
+  //   res.status(apiResponse.status).json(apiResponse);
+  // }
+
+  async postmatrixMonth(req: Request, res: Response) {
+    const apiResponse = await this.adminUseCase.postmatrixPerMonth();
+    res.status(apiResponse.status).json(apiResponse);
+  }
+  async adminCards(req: Request, res: Response) {
+    const apiResponse = await this.adminUseCase.getadminCardData();
+    res.status(apiResponse.status).json(apiResponse);
+  }
 }

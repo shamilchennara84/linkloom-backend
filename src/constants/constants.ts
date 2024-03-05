@@ -14,3 +14,17 @@ export const userNameMinLength = 3;
 export const userNameMaxLength = 20;
 export const nameRegex = "^[a-zA-Z ]{3,20}$";
 export const passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$";
+export const monthMapping: { [key: string]: string } = { 
+  1: "January",
+  2: "February",
+  3: "March",
+  4: "April",
+  5: "May",
+  6: "June",
+  7: "July",
+  8: "August",
+  9: "September",
+  10: "October",
+  11: "November",
+  12: "December",
+};
