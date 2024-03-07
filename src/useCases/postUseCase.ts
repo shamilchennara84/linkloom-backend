@@ -4,13 +4,13 @@ import { IPostReq, IPostRes, IPostUserRes } from "../interfaces/Schema/postSchem
 import { IapiResponse, ID } from "../interfaces/common";
 import { ILikeCountRes } from "../interfaces/Schema/likeSchema";
 import { ICommentSchema } from "../interfaces/Schema/commentSchema";
+import { ITagRes } from "../interfaces/Schema/tagSchema";
 
 export class PostUseCase {
   constructor(private readonly postRepository: PostRepository) {}
 
   async savePost(post: IPostReq): Promise<IapiResponse<IPostRes | null>> {
     try {
-      // Extract the filename from the postURL before saving
       if (post && post.postURL) {
         const filename = post.postURL.split("\\").pop() || "";
         post.postURL = filename;
@@ -28,6 +28,16 @@ export class PostUseCase {
       const userPosts = await this.postRepository.fetchUserPosts(userId);
 
       return get200Response(userPosts);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async fetchUserSavedPosts(userId: ID): Promise<IapiResponse<IPostRes[] | null>> {
+    try {
+      const userSavedPosts = await this.postRepository.fetchUserSavedPosts(userId);
+
+      return get200Response(userSavedPosts);
     } catch (error) {
       return get500Response(error as Error);
     }
@@ -84,6 +94,41 @@ export class PostUseCase {
       if (!response) {
         throw new Error("Failed to fetch comment");
       }
+      return get200Response(response);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+  async deleteComments(commentId: string) {
+    try {
+      const response = await this.postRepository.deleteComment(commentId);
+      if (!response) {
+        throw new Error("Failed to delete comment");
+      }
+      return get200Response(response);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async TagPost(userId: ID, postId: ID): Promise<IapiResponse<ITagRes | null>> {
+    try {
+      const response = await this.postRepository.tagPost(userId.toString(), postId.toString());
+      if (!response) {
+        throw new Error("Failed to tag post");
+      }
+      return get200Response(response);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+  async unTagPost(userId: ID, postId: ID): Promise<IapiResponse<ITagRes | null>> {
+    try {
+      const response = await this.postRepository.untagPost(userId.toString(), postId.toString());
+      if (!response) {
+        throw new Error("Failed to untag post");
+      }
+
       return get200Response(response);
     } catch (error) {
       return get500Response(error as Error);

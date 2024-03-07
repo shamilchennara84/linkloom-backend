@@ -25,16 +25,24 @@ userRouter.patch("/remove/profileimage/:userId", userAuth, (req, res) => uContro
 
 // Post Routes
 userRouter.post("/addPost", upload.single("Image"), (req, res) => postController.savePost(req, res));
-userRouter.get("/userPost/:userId", (req, res) => postController.userPosts(req, res));
 userRouter.get("/homePost/:userId", (req, res) => postController.HomePosts(req, res));
+userRouter.get("/userPost/:userId", (req, res) => postController.userPosts(req, res));
+userRouter.get("/usersavedPost/:userId", (req, res) => postController.userSavedPosts(req, res));
 
 // Post Like and Unlike Routes
 userRouter.get("/like/:userId/:postId", (req, res) => postController.LikePost(req, res));
 userRouter.get("/unlike/:userId/:postId", (req, res) => postController.UnlikePost(req, res));
 
+//post tag and untag
+
+userRouter.get("/tag/:userId/:postId", (req, res) => postController.TagPost(req, res));
+userRouter.get("/untag/:userId/:postId", (req, res) => postController.UnTagPost(req, res));
+
 // Comment Routes
 userRouter.get("/comments/:postId", (req, res) => postController.getComments(req, res));
 userRouter.post("/createcomment", (req, res) => postController.createComment(req, res));
+userRouter.delete("/comments/:commentId", (req, res) => postController.deleteComments(req, res));
+
 
 // Follow and Followed Users Routes
 userRouter

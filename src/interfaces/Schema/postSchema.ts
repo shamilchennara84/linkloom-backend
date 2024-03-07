@@ -18,6 +18,7 @@ export interface IPostUserRes extends IPostRes {
   likes: ILikeRes[];
   likeCount: number;
   likedByCurrentUser: boolean;
+  taggedByCurrentUser: boolean;
 }
 
 export interface IPostPerMonth {

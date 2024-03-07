@@ -4,6 +4,7 @@ import { PostUseCase } from "../../useCases/postUseCase";
 import { Request, Response } from "express";
 import { ICommentSchema } from "../../interfaces/Schema/commentSchema";
 
+
 export class PostController {
   constructor(private postUserCase: PostUseCase) {}
 
@@ -34,10 +35,17 @@ export class PostController {
     try {
       const userId: ID = req.params.userId as unknown as ID;
       const apiResponse = await this.postUserCase.fetchUserPosts(userId);
-      // Respond with the saved post data
       res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
-      // Call your use case or service to save the post
+      console.log(error);
+    }
+  }
+  async userSavedPosts(req: Request, res: Response) {
+    try {
+       const userId: ID = req.params.userId as unknown as ID;
+        const apiResponse = await this.postUserCase.fetchUserSavedPosts(userId);
+        res.status(apiResponse.status).json(apiResponse);
+    } catch (error) {
       console.log(error);
     }
   }
@@ -76,6 +84,28 @@ export class PostController {
       console.log(error);
     }
   }
+  async TagPost(req: Request, res: Response) {
+    try {
+      const userId: ID = req.params.userId as unknown as ID;
+      const postId: ID = req.params.postId as unknown as ID;
+      const apiResponse = await this.postUserCase.TagPost(userId, postId);
+
+      res.status(apiResponse.status).json(apiResponse);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+  async UnTagPost(req: Request, res: Response) {
+    try {
+      const userId: ID = req.params.userId as unknown as ID;
+      const postId: ID = req.params.postId as unknown as ID;
+      const apiResponse = await this.postUserCase.unTagPost(userId, postId);
+
+      res.status(apiResponse.status).json(apiResponse);
+    } catch (error) {
+      console.log(error);
+    }
+  }
 
   async createComment(req: Request, res: Response) {
     try {
@@ -102,6 +132,17 @@ export class PostController {
     try {
       const postId: string = req.params.postId;
       const apiResponse = await this.postUserCase.getComments(postId);
+
+      res.status(apiResponse.status).json(apiResponse);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async deleteComments(req: Request, res: Response) {
+    try {
+      const commentId: string = req.params.commentId;
+      const apiResponse = await this.postUserCase.deleteComments(commentId);
 
       res.status(apiResponse.status).json(apiResponse);
     } catch (error) {

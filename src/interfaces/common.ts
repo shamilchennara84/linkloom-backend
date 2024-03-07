@@ -6,6 +6,7 @@ import { ICommentSchema } from "./Schema/commentSchema";
 import { IFollowCountRes, IFollowStatus, IUserSearchItem } from "./Schema/followerSchema";
 import { IChatHistoryItem, IConversation, IConversationListItem } from "./Schema/chatSchema";
 import { IUserPerMonth, IUserPerYear, IAdminCardData } from "./Schema/adminSchema";
+import { ITagRes } from "./Schema/tagSchema";
 
 export type ID = Schema.Types.ObjectId;
 
@@ -43,6 +44,7 @@ export type AllResTypes =
   | IPostPerMonth[]
   | IPostPerYear[]
   | IAdminCardData
+  | ITagRes
   | null;
 
 export interface IapiResponse<T extends AllResTypes> {
