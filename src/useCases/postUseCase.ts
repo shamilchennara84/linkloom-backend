@@ -35,7 +35,7 @@ export class PostUseCase {
 
   async fetchUserSavedPosts(userId: ID): Promise<IapiResponse<IPostRes[] | null>> {
     try {
-      const userSavedPosts = await this.postRepository.fetchUserSavedPosts(userId);
+      const userSavedPosts = await this.postRepository.fetchUserSavedPosts(userId.toString());
 
       return get200Response(userSavedPosts);
     } catch (error) {

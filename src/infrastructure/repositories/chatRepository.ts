@@ -57,7 +57,7 @@ export class ChatRepository implements IChatRepo {
         },
       },
     ]);
-    console.log(usersData, "userdata");
+
 
     if (usersData && usersData.length !== 0) {
       const followersData = usersData.map((val) => val.followedUser);
@@ -67,7 +67,7 @@ export class ChatRepository implements IChatRepo {
     }
   }
   async getChatHistory(conversationId: string): Promise<IChatHistoryItem[]> {
-    console.log(conversationId);
+   
     await ChatModel.updateMany({ conversationId: conversationId }, { read: true });
     const combinedData = await ChatModel.aggregate([
       {
@@ -155,7 +155,7 @@ export class ChatRepository implements IChatRepo {
           },
         },
       ]);
-      console.log(conversations);
+   
 
       return conversations || [];
     } catch (error) {

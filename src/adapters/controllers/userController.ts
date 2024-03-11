@@ -62,7 +62,7 @@ export class UserController {
 
       // Directly use the user object from the request
       const user = req.user;
-      console.log(otp, user.otp);
+  
       if (otp == user.otp) {
         // If OTP matches, save user data to the user collection
         const savedData = await this.userUseCase.saveUserDetails({
@@ -78,7 +78,7 @@ export class UserController {
         if (!tries) {
           return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: `maximum try for OTP exceeded` });
         }
-        console.log("otp didn't match");
+      
         return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Invalid OTP" });
       }
     } catch (error) {

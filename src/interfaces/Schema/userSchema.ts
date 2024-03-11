@@ -6,6 +6,7 @@ export interface IUser {
   username: string;
   fullname: string;
   email: string;
+  bio?:string;
   password?: string;
   mobile: string;
   dob?: Date; // need to check

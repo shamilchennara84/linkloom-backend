@@ -21,9 +21,9 @@ export class PostRepository implements IPostRepo {
   }
 
   async fetchUserSavedPosts(userId: string): Promise<IPostRes[]> {
-    const UserId = new mongoose.Types.ObjectId(userId);
+    
     return await tagModel.aggregate([
-      { $match: { userId: UserId } },
+      { $match: { userId: new mongoose.Types.ObjectId(userId) } },
       {
         $lookup: {
           from: "posts",

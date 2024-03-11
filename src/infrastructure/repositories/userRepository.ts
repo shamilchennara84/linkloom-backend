@@ -81,6 +81,7 @@ export class UserRepository implements IUserRepo {
         fullname: user.fullname,
         mobile: user.mobile,
         dob: user.dob,
+        bio:user.bio,
         visibility: user.visibility,
       },
       { new: true }
@@ -221,6 +222,7 @@ export class UserRepository implements IUserRepo {
           username: 1,
           fullname: 1,
           email: 1,
+          bio:1,
           password: 1,
           mobile: 1,
           dob: 1,

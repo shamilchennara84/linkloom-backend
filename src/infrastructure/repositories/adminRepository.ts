@@ -84,7 +84,7 @@ export class AdminRepository implements IAdminRepo {
         },
       },
     ]);
-    console.log(userdata);
+   
     return userdata;
   }
 
@@ -106,7 +106,7 @@ export class AdminRepository implements IAdminRepo {
         },
       },
     ]);
-    console.log(userdata);
+   
     return userdata;
   }
 
@@ -116,28 +116,28 @@ export class AdminRepository implements IAdminRepo {
       this.getLikesCountByMonth(),
       this.getCommentsCountByMonth(),
     ]);
-    console.log(postsCount, likesCount, commentsCount);
+
     const postData = await this.mapToPostPerMonth(postsCount, likesCount, commentsCount);
 
     return postData;
   }
   async getPostsCountByMonth(): Promise<MonthCount[]> {
     const postsCount = await postModel.aggregate(countperMonth);
-    console.log(postsCount);
+
 
     return postsCount;
   }
 
   async getLikesCountByMonth(): Promise<MonthCount[]> {
     const likesCount = await likeModel.aggregate(countperMonth);
-    console.log(likesCount);
+  
 
     return likesCount;
   }
 
   async getCommentsCountByMonth(): Promise<MonthCount[]> {
     const commentCount = await commentModel.aggregate(countperMonth);
-    console.log(commentCount);
+   
     return commentCount;
   }
   async mapToPostPerMonth(
@@ -177,7 +177,7 @@ export class AdminRepository implements IAdminRepo {
       }
     });
 
-    console.log("result", combinedCountsArray);
+    
     return combinedCountsArray;
   }
 
