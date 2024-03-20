@@ -25,7 +25,7 @@ export class AdminController {
     res.status(apiResponse.status).json(apiResponse);
   }
 
-  async newUserperMonth(req: Request, res: Response) {
+  async newUserPerMonth(req: Request, res: Response) {
     const apiResponse = await this.adminUseCase.newUsersPerMonth();
     res.status(apiResponse.status).json(apiResponse);
   }
@@ -39,8 +39,8 @@ export class AdminController {
   //   res.status(apiResponse.status).json(apiResponse);
   // }
 
-  async postmatrixMonth(req: Request, res: Response) {
-    const apiResponse = await this.adminUseCase.postmatrixPerMonth();
+  async postMatrixMonth(req: Request, res: Response) {
+    const apiResponse = await this.adminUseCase.postMatrixPerMonth();
     res.status(apiResponse.status).json(apiResponse);
   }
   async adminCards(req: Request, res: Response) {

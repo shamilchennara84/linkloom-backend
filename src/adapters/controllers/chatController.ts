@@ -1,7 +1,7 @@
 import { ChatUseCase } from "../../useCases/chatUseCase";
 import { RequestWithUser } from "../../infrastructure/middleware/userAuth";
 import { ID } from "../../interfaces/common";
-import { Request, Response } from "express-serve-static-core";
+import { Request, Response } from "express";
 
 export class ChatController {
   constructor(private chatUseCase: ChatUseCase) {}

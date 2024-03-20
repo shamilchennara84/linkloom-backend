@@ -86,7 +86,7 @@ export class UserRepository implements IUserRepo {
       },
       { new: true }
     );
-    console.log("new data", updated);
+    
     return updated;
   }
 
@@ -247,7 +247,6 @@ export class UserRepository implements IUserRepo {
 
   async searchUsers(userId: ID, query: string): Promise<IUserSearchItem[] | null> {
     const id = new Types.ObjectId(userId as unknown as string);
-    console.log(id);
     const regex = new RegExp(query, "i");
     const result = await userModel.aggregate([
       { $match: { $or: [{ username: { $regex: regex } }, { fullname: { $regex: regex } }], _id: { $ne: id } } },

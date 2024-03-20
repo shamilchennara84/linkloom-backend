@@ -4,13 +4,13 @@ import { GenerateOTP } from "../../providers/otpGenerator";
 import { IUserAuth, IUserUpdate } from "../../interfaces/Schema/userSchema";
 import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import { ITempUserReq } from "../../interfaces/Schema/tempUserSchema";
-import { IapiResponse, ID } from "../../interfaces/common";
+import { IApiResponse, ID } from "../../interfaces/common";
 import { Request, Response } from "express-serve-static-core";
 import { RequestWithTempUser } from "../../infrastructure/middleware/validateTokenAndTempUser.ts";
 
 import { RequestWithUser } from "../../infrastructure/middleware/userAuth";
 import { IFollowCountRes, IFollowerReq } from "../../interfaces/Schema/followerSchema";
-import { getErrorResponse } from "../../infrastructure/helperfunctions/response";
+import { getErrorResponse } from "../../infrastructure/helperFunctions/response";
 
 export class UserController {
   constructor(private userUseCase: UserUseCase, private otpGenerator: GenerateOTP, private encrypt: Encrypt) {}
@@ -62,7 +62,7 @@ export class UserController {
 
       // Directly use the user object from the request
       const user = req.user;
-  
+
       if (otp == user.otp) {
         // If OTP matches, save user data to the user collection
         const savedData = await this.userUseCase.saveUserDetails({
@@ -78,7 +78,7 @@ export class UserController {
         if (!tries) {
           return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: `maximum try for OTP exceeded` });
         }
-      
+
         return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Invalid OTP" });
       }
     } catch (error) {
@@ -130,7 +130,7 @@ export class UserController {
       followingUserId: followerId,
       isApproved: true,
     };
-    let apiResponse: IapiResponse<IFollowCountRes | null> = getErrorResponse(
+    let apiResponse: IApiResponse<IFollowCountRes | null> = getErrorResponse(
       STATUS_CODES.BAD_REQUEST,
       "Invalid status"
     );
@@ -139,6 +139,10 @@ export class UserController {
     } else if (status === "Request") {
       followData.isApproved = false;
       apiResponse = await this.userUseCase.followUser(followData);
+      // if(apiResponse){
+      // TODO:
+      //send notification
+      // }
     } else if (status === "Following") {
       apiResponse = await this.userUseCase.unFollowUser(userId, followerId);
     }

@@ -1,11 +1,10 @@
 // Importing required modules and controllers
 import express from "express";
-import { chatController, postController, uController } from "../../providers/controllers";
+import { chatController, postController, uController, notificationController } from "../../providers/controllers";
 import { upload } from "../config/multer";
 import { userAuth } from "../middleware/userAuth";
 import { userRegisterValidation } from "../middleware/userValidation";
 import { validateTokenAndTempUser } from "../middleware/validateTokenAndTempUser.ts";
-
 
 // Creating an instance of express router
 const userRouter = express.Router();
@@ -43,24 +42,30 @@ userRouter.get("/comments/:postId", (req, res) => postController.getComments(req
 userRouter.post("/createcomment", (req, res) => postController.createComment(req, res));
 userRouter.delete("/comments/:commentId", (req, res) => postController.deleteComments(req, res));
 
-
 // Follow and Followed Users Routes
 userRouter
   .route("/follow/:userId")
   .get(userAuth, (req, res) => uController.getFollowStat(req, res))
   .post(userAuth, (req, res) => uController.followUser(req, res));
-  
-  //Conversation Users Routes
-  userRouter.get("/conversation/:userId",userAuth,(req,res)=>chatController.getConversation(req,res))
-  userRouter.get("/conversations/",userAuth,(req,res)=>chatController.getConversations(req,res))
-  userRouter.get("/followedUsers", userAuth, (req, res) => chatController.getFollowedUser(req, res));
-  userRouter.get("/chat/history/:roomId", userAuth, (req, res) => chatController.getChatHistory(req, res));
 
-  //usersearch 
-  userRouter.get("/userSearch", userAuth, (req, res) => uController.userSearch(req, res));
+//Conversation Users Routes
+userRouter.get("/conversation/:userId", userAuth, (req, res) => chatController.getConversation(req, res));
+userRouter.get("/conversations/", userAuth, (req, res) => chatController.getConversations(req, res));
+userRouter.get("/followedUsers", userAuth, (req, res) => chatController.getFollowedUser(req, res));
+userRouter.get("/chat/history/:roomId", userAuth, (req, res) => chatController.getChatHistory(req, res));
 
+//userSearch
+userRouter.get("/userSearch", userAuth, (req, res) => uController.userSearch(req, res));
 
-
-
+userRouter.get("/notifications", userAuth, (req, res) => notificationController.getAllNotification(req, res));
+userRouter.delete("/notifications:notificationId", userAuth, (req, res) =>
+  notificationController.deleteNotification(req, res)
+);
+userRouter.delete("/friendrequest/decline/:notificationId", userAuth, (req, res) =>
+  notificationController.rejectFriendRequest(req, res)
+);
+userRouter.patch("/friendrequest/accept/:notificationId", userAuth, (req, res) =>
+  notificationController.acceptFriendRequest(req, res)
+);
 
 export default userRouter;

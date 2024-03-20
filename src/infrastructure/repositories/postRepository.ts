@@ -64,6 +64,14 @@ export class PostRepository implements IPostRepo {
       },
       {
         $lookup: {
+          from: "comments",
+          localField: "_id",
+          foreignField: "postId",
+          as: "comments",
+        },
+      },
+      {
+        $lookup: {
           from: "tags",
           localField: "_id",
           foreignField: "postId",
@@ -74,6 +82,7 @@ export class PostRepository implements IPostRepo {
       {
         $addFields: {
           likeCount: { $size: "$likes" },
+          commentCount: { $size: "$comments" },
           likedByCurrentUser: {
             $in: [id, "$likes.userId"],
           },
@@ -83,7 +92,6 @@ export class PostRepository implements IPostRepo {
         },
       },
     ]);
-    console.log(postData);
     return postData;
   }
 
@@ -135,7 +143,7 @@ export class PostRepository implements IPostRepo {
       const newTag = new tagModel({ postId, userId });
       const tagged = await newTag.save();
       if (tagged) {
-        console.log("tagged");
+       
         return {
           _id: tagged._id,
           userId: tagged.userId,
@@ -158,7 +166,7 @@ export class PostRepository implements IPostRepo {
     if (existingTag) {
       const untagged = await tagModel.deleteOne({ userId, postId });
       if (untagged) {
-        console.log("Untagged");
+     
         // Assuming ITagRes includes properties like _id, userId, createdAt, and postId
         return {
           _id: existingTag._id,

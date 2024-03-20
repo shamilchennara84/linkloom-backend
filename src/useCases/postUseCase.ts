@@ -1,7 +1,7 @@
-import { get200Response, get500Response } from "../infrastructure/helperfunctions/response";
+import { get200Response, get500Response } from "../infrastructure/helperFunctions/response";
 import { PostRepository } from "../infrastructure/repositories/postRepository";
 import { IPostReq, IPostRes, IPostUserRes } from "../interfaces/Schema/postSchema";
-import { IapiResponse, ID } from "../interfaces/common";
+import { IApiResponse, ID } from "../interfaces/common";
 import { ILikeCountRes } from "../interfaces/Schema/likeSchema";
 import { ICommentSchema } from "../interfaces/Schema/commentSchema";
 import { ITagRes } from "../interfaces/Schema/tagSchema";
@@ -9,21 +9,20 @@ import { ITagRes } from "../interfaces/Schema/tagSchema";
 export class PostUseCase {
   constructor(private readonly postRepository: PostRepository) {}
 
-  async savePost(post: IPostReq): Promise<IapiResponse<IPostRes | null>> {
+  async savePost(post: IPostReq): Promise<IApiResponse<IPostRes | null>> {
     try {
       if (post && post.postURL) {
         const filename = post.postURL.split("\\").pop() || "";
         post.postURL = filename;
       }
       const savedPost = await this.postRepository.savePost(post);
-      console.log("post data saved, on usecase", savedPost);
       return get200Response(savedPost);
     } catch (error) {
       return get500Response(error as Error);
     }
   }
 
-  async fetchUserPosts(userId: ID): Promise<IapiResponse<IPostRes[] | null>> {
+  async fetchUserPosts(userId: ID): Promise<IApiResponse<IPostRes[] | null>> {
     try {
       const userPosts = await this.postRepository.fetchUserPosts(userId);
 
@@ -33,7 +32,7 @@ export class PostUseCase {
     }
   }
 
-  async fetchUserSavedPosts(userId: ID): Promise<IapiResponse<IPostRes[] | null>> {
+  async fetchUserSavedPosts(userId: ID): Promise<IApiResponse<IPostRes[] | null>> {
     try {
       const userSavedPosts = await this.postRepository.fetchUserSavedPosts(userId.toString());
 
@@ -43,7 +42,7 @@ export class PostUseCase {
     }
   }
 
-  async fetchLatestPosts(userId: ID): Promise<IapiResponse<IPostUserRes[] | null>> {
+  async fetchLatestPosts(userId: ID): Promise<IApiResponse<IPostUserRes[] | null>> {
     try {
       const userPosts = await this.postRepository.fetchPostsExcludingUserId(userId.toString());
 
@@ -53,7 +52,7 @@ export class PostUseCase {
     }
   }
 
-  async likePost(userId: ID, postId: ID): Promise<IapiResponse<ILikeCountRes | null>> {
+  async likePost(userId: ID, postId: ID): Promise<IApiResponse<ILikeCountRes | null>> {
     try {
       const response = await this.postRepository.likePost(userId.toString(), postId.toString());
       if (!response) {
@@ -64,7 +63,7 @@ export class PostUseCase {
       return get500Response(error as Error);
     }
   }
-  async UnlikePost(userId: ID, postId: ID): Promise<IapiResponse<ILikeCountRes | null>> {
+  async UnlikePost(userId: ID, postId: ID): Promise<IApiResponse<ILikeCountRes | null>> {
     try {
       const response = await this.postRepository.UnlikePost(userId.toString(), postId.toString());
       if (!response) {
@@ -76,7 +75,7 @@ export class PostUseCase {
     }
   }
 
-  async saveComment(postComment: ICommentSchema): Promise<IapiResponse<ICommentSchema | null>> {
+  async saveComment(postComment: ICommentSchema): Promise<IApiResponse<ICommentSchema | null>> {
     try {
       const response = await this.postRepository.addComment(postComment);
       if (!response) {
@@ -111,7 +110,7 @@ export class PostUseCase {
     }
   }
 
-  async TagPost(userId: ID, postId: ID): Promise<IapiResponse<ITagRes | null>> {
+  async TagPost(userId: ID, postId: ID): Promise<IApiResponse<ITagRes | null>> {
     try {
       const response = await this.postRepository.tagPost(userId.toString(), postId.toString());
       if (!response) {
@@ -122,7 +121,7 @@ export class PostUseCase {
       return get500Response(error as Error);
     }
   }
-  async unTagPost(userId: ID, postId: ID): Promise<IapiResponse<ITagRes | null>> {
+  async unTagPost(userId: ID, postId: ID): Promise<IApiResponse<ITagRes | null>> {
     try {
       const response = await this.postRepository.untagPost(userId.toString(), postId.toString());
       if (!response) {

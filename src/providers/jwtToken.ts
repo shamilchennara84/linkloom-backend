@@ -13,7 +13,7 @@ dotenv.config();
 export class JWTtoken implements Jwt {
   generateAccessToken(userId: ID): string {
     const KEY = process.env.JWT_SECRET_KEY;
-    console.log(KEY);
+    
     if (KEY !== undefined) {
       const exp = Math.floor(Date.now() / 1000) + accessTokenExp;
       return jwt.sign({ userId, exp, iat: Date.now() / 1000 }, KEY);
@@ -23,7 +23,7 @@ export class JWTtoken implements Jwt {
 
   generateRefreshToken(userId: ID): string {
     const KEY = process.env.JWT_SECRET_KEY;
-      console.log(KEY);
+      
     if (KEY !== undefined) {
       const exp = Math.floor(Date.now() / 1000) + refreshTokenExp;
       return jwt.sign({ userId, exp, iat: Date.now() / 1000 }, KEY);
@@ -33,7 +33,7 @@ export class JWTtoken implements Jwt {
 
   generateTempToken(userId: ID): string {
     const KEY = process.env.JWT_SECRET_KEY;
-      console.log(KEY);
+    
     if (KEY !== undefined) {
       const exp = Math.floor(Date.now() / 1000) + tempTokenExp;
       return jwt.sign({ userId, exp, iat: Date.now() / 1000 }, KEY);
