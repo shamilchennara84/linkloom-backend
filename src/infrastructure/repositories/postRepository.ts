@@ -79,6 +79,14 @@ export class PostRepository implements IPostRepo {
           as: "tags",
         },
       },
+      {
+        $lookup: {
+          from: "reports",
+          localField: "_id",
+          foreignField: "contentId",
+          as: "reports",
+        },
+      },
 
       {
         $addFields: {
@@ -89,6 +97,9 @@ export class PostRepository implements IPostRepo {
           },
           taggedByCurrentUser: {
             $in: [id, "$tags.userId"],
+          },
+          reportedByCurrentUser: {
+            $in: [id, "$reports.reporterId"],
           },
         },
       },
@@ -225,7 +236,7 @@ export class PostRepository implements IPostRepo {
     const report = new reportModel({
       reporterId: userId,
       contentId: postId,
-      contentType: "Post",
+      contentType: "post",
       reason: reason,
     });
 

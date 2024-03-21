@@ -57,5 +57,5 @@ userRouter.get("/followingUsersList/:userId", userAuth_1.userAuth, (req, res) =>
 //user delete
 userRouter.delete("/", userAuth_1.userAuth, (req, res) => controllers_1.uController.deleteUser(req, res));
 //report 
-userRouter.post('/report/:postId', userAuth_1.userAuth, (req, res) => controllers_1.postController.ReportPost(req, res));
+userRouter.post('/report', userAuth_1.userAuth, (req, res) => controllers_1.postController.ReportPost(req, res));
 exports.default = userRouter;

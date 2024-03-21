@@ -1,5 +1,5 @@
 import { ID } from "../common";
-import {ILikeRes } from "./likeSchema";
+import { ILikeRes } from "./likeSchema";
 import { IUserRes } from "./userSchema";
 
 export interface IPostReq {
@@ -8,7 +8,7 @@ export interface IPostReq {
   caption: string;
   location: string;
   createdAt: Date;
-  isRemoved?: boolean
+  isRemoved?: boolean;
 }
 
 export interface IPostRes extends IPostReq {
@@ -21,6 +21,7 @@ export interface IPostUserRes extends IPostRes {
   commentCount: number;
   likedByCurrentUser: boolean;
   taggedByCurrentUser: boolean;
+  reportedByCurrentUser: boolean;
 }
 
 export interface IPostPerMonth {
@@ -36,4 +37,3 @@ export interface IPostPerYear {
   likes: number;
   comments: number;
 }
-

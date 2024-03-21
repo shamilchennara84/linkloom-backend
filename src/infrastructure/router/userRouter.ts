@@ -76,6 +76,6 @@ userRouter.delete("/", userAuth, (req, res) => uController.deleteUser(req, res))
 
 //report 
 
-userRouter.post('/report/:postId',userAuth,(req, res) => postController.ReportPost(req, res));
+userRouter.post('/report',userAuth,(req, res) => postController.ReportPost(req, res));
 
 export default userRouter;

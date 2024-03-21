@@ -7,6 +7,7 @@ import { IPostPerMonth } from "../../interfaces/Schema/postSchema";
 import postModel from "../../entities/models/postModel";
 import likeModel from "../../entities/models/likeModel";
 import commentModel from "../../entities/models/commentModel";
+import reportModel from "../../entities/models/reportModel";
 
 interface MonthCount {
   count: number;
@@ -84,7 +85,7 @@ export class AdminRepository implements IAdminRepo {
         },
       },
     ]);
-   
+
     return userdata;
   }
 
@@ -106,7 +107,7 @@ export class AdminRepository implements IAdminRepo {
         },
       },
     ]);
-   
+
     return userdata;
   }
 
@@ -124,20 +125,18 @@ export class AdminRepository implements IAdminRepo {
   async getPostsCountByMonth(): Promise<MonthCount[]> {
     const postsCount = await postModel.aggregate(countperMonth);
 
-
     return postsCount;
   }
 
   async getLikesCountByMonth(): Promise<MonthCount[]> {
     const likesCount = await likeModel.aggregate(countperMonth);
-  
 
     return likesCount;
   }
 
   async getCommentsCountByMonth(): Promise<MonthCount[]> {
     const commentCount = await commentModel.aggregate(countperMonth);
-   
+
     return commentCount;
   }
   async mapToPostPerMonth(
@@ -177,14 +176,13 @@ export class AdminRepository implements IAdminRepo {
       }
     });
 
-    
     return combinedCountsArray;
   }
 
   async getCardData(): Promise<IAdminCardData> {
     const ActiveUser = await userModel.find().countDocuments();
     const Posts = await postModel.find().countDocuments();
-    const Reports = 34;
+    const Reports = await reportModel.find().countDocuments();
     const DeletedUser = await userModel.find({ isDeleted: true }).countDocuments();
     console.log(DeletedUser);
     return { ActiveUser, Posts, Reports, DeletedUser };
