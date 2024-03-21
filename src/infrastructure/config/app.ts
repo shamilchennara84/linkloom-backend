@@ -6,6 +6,8 @@ import path from "path";
 import adminRouter from "../router/adminRouter";
 import userRouter from "../router/userRouter";
 import tokenRouter from "../router/tokenRouter";
+import { postUseCase } from "../../providers/controllers"; 
+import cron from 'node-cron';
 
 export const createServer = () => {
   try {
@@ -21,6 +23,17 @@ export const createServer = () => {
       })
     );
 
+    cron.schedule("* * * * *", () => {
+      postUseCase
+        .PostRemovalJob()
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    });
+      
     app.use("/api/admin", adminRouter);
     app.use("/api/user", userRouter);
     app.use("/api/token", tokenRouter);

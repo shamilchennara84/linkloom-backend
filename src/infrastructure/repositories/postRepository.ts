@@ -10,6 +10,8 @@ import { ICommentSchema } from "../../interfaces/Schema/commentSchema";
 import commentModel from "../../entities/models/commentModel";
 import { ITagRes } from "../../interfaces/Schema/tagSchema";
 import tagModel from "../../entities/models/tagModel";
+import reportModel from "../../entities/models/reportModel";
+import cron from "node-cron";
 
 export class PostRepository implements IPostRepo {
   async savePost(post: IPostReq): Promise<IPostRes> {
@@ -21,7 +23,6 @@ export class PostRepository implements IPostRepo {
   }
 
   async fetchUserSavedPosts(userId: string): Promise<IPostRes[]> {
-    
     return await tagModel.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(userId) } },
       {
@@ -143,7 +144,6 @@ export class PostRepository implements IPostRepo {
       const newTag = new tagModel({ postId, userId });
       const tagged = await newTag.save();
       if (tagged) {
-       
         return {
           _id: tagged._id,
           userId: tagged.userId,
@@ -166,7 +166,6 @@ export class PostRepository implements IPostRepo {
     if (existingTag) {
       const untagged = await tagModel.deleteOne({ userId, postId });
       if (untagged) {
-     
         // Assuming ITagRes includes properties like _id, userId, createdAt, and postId
         return {
           _id: existingTag._id,
@@ -221,4 +220,60 @@ export class PostRepository implements IPostRepo {
     const commentDeleted = await commentModel.findByIdAndDelete(commentId);
     return commentDeleted;
   }
+
+  async reportPost(userId: string, postId: string, reason: string) {
+    const report = new reportModel({
+      reporterId: userId,
+      contentId: postId,
+      contentType: "Post",
+      reason: reason,
+    });
+
+    try {
+      const savedReport = await report.save();
+      console.log("Report created successfully");
+      return savedReport;
+    } catch (error) {
+      console.error("Error creating report:", error);
+      throw error;
+    }
+  }
+
+  async checkAndMarkPostsAsRemoved() {
+    console.log("Running optimized checkAndMarkPostsAsRemoved...");
+    try {
+      const postsToMarkAsRemoved = await reportModel.aggregate([
+        { $match: { contentType: "post" } },
+        { $group: { _id: "$contentId", count: { $sum: 1 } } },
+        { $match: { count: { $gte: 5 } } },
+      ]);
+
+      const bulkOps = postsToMarkAsRemoved.map((post) => ({
+        updateOne: {
+          filter: { _id: new Types.ObjectId(post._id) },
+          update: { isRemoved: true },
+        },
+      }));
+
+      if (bulkOps.length > 0) {
+        await postModel.bulkWrite(bulkOps);
+        console.log(`Marked ${bulkOps.length} posts as removed due to excessive reports.`);
+      } else {
+        console.log("No posts marked as removed.");
+      }
+    } catch (error) {
+      console.error("Error in optimized checkAndMarkPostsAsRemoved:", error);
+      throw error;
+    }
+  }
+
+  scheduleCheckAndMarkPostsAsRemoved() {
+    console.log("cron job triggering");
+    cron.schedule("0 * * * *", async () => {
+      console.log("cron job working");
+      await this.checkAndMarkPostsAsRemoved();
+    });
+  }
+
+
 }

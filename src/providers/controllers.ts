@@ -34,7 +34,7 @@ const notificationRepository = new NotificationRepository()
 
 
 const userUseCase = new UserUseCase(encrypt, jwttoken, userRepository, tempUserRepository, mailSender);
-const postUseCase = new PostUseCase(postRepository);
+export const postUseCase = new PostUseCase(postRepository);
 const adminUseCase = new AdminUseCase(encrypt, adminRepository, jwttoken);
 export const chatUseCase = new ChatUseCase(chatRepository);
 export const notificationUseCase = new NotificationUseCase(notificationRepository);

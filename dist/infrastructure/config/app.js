@@ -12,6 +12,8 @@ const path_1 = __importDefault(require("path"));
 const adminRouter_1 = __importDefault(require("../router/adminRouter"));
 const userRouter_1 = __importDefault(require("../router/userRouter"));
 const tokenRouter_1 = __importDefault(require("../router/tokenRouter"));
+const controllers_1 = require("../../providers/controllers");
+const node_cron_1 = __importDefault(require("node-cron"));
 const createServer = () => {
     try {
         const app = (0, express_1.default)();
@@ -22,6 +24,16 @@ const createServer = () => {
             credentials: true,
             origin: process.env.CORS_URI,
         }));
+        node_cron_1.default.schedule("* * * * *", () => {
+            controllers_1.postUseCase
+                .PostRemovalJob()
+                .then((result) => {
+                console.log(result);
+            })
+                .catch((error) => {
+                console.error(error);
+            });
+        });
         app.use("/api/admin", adminRouter_1.default);
         app.use("/api/user", userRouter_1.default);
         app.use("/api/token", tokenRouter_1.default);

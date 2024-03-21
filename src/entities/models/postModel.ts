@@ -5,7 +5,7 @@ const postSchema: Schema = new Schema<IPostReq & Document>(
   {
     userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Users", // Reference to the Users collection, assuming that's where user data is stored
+      ref: "Users", 
       required: true,
     },
     postURL: {
@@ -18,7 +18,11 @@ const postSchema: Schema = new Schema<IPostReq & Document>(
     },
     location: {
       type: String,
-      required:true
+      required: true,
+    },
+    isRemoved: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

@@ -8,6 +8,7 @@ import { IChatHistoryItem, IConversation, IConversationListItem } from "./Schema
 import { IUserPerMonth, IUserPerYear, IAdminCardData } from "./Schema/adminSchema";
 import { ITagRes } from "./Schema/tagSchema";
 import { INotificationRes, INotificationWithUser } from "./Schema/notificationSchema";
+import { IReportReq } from "./Schema/reportSchema";
 
 export type ID = Schema.Types.ObjectId;
 
@@ -49,6 +50,7 @@ export type AllResTypes =
   | INotificationWithUser
   | INotificationWithUser[]
   | INotificationRes
+  | IReportReq
   | null;
 
 export interface IApiResponse<T extends AllResTypes> {

@@ -8,6 +8,7 @@ export interface IPostReq {
   caption: string;
   location: string;
   createdAt: Date;
+  isRemoved?: boolean
 }
 
 export interface IPostRes extends IPostReq {

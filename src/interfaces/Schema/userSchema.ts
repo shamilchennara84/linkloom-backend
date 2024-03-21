@@ -19,6 +19,7 @@ export interface IUser {
   visibility: "public" | "private";
   coords?: ICoords;
   address?: IUserAddress;
+  isDeleted?:boolean
 }
 
 export interface IUserRes extends IUser {}

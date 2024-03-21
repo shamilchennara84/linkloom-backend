@@ -185,8 +185,8 @@ export class AdminRepository implements IAdminRepo {
     const ActiveUser = await userModel.find().countDocuments();
     const Posts = await postModel.find().countDocuments();
     const Reports = 34;
-    const DeletedUser = 34;
-
+    const DeletedUser = await userModel.find({ isDeleted: true }).countDocuments();
+    console.log(DeletedUser);
     return { ActiveUser, Posts, Reports, DeletedUser };
   }
   // async postPerYear() {

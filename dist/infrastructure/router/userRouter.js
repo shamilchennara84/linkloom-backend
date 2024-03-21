@@ -54,4 +54,8 @@ userRouter.delete("/friendrequest/decline/:notificationId", userAuth_1.userAuth,
 userRouter.patch("/friendrequest/accept/:notificationId", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.acceptFriendRequest(req, res));
 userRouter.get("/followerUsersList/:userId", userAuth_1.userAuth, (req, res) => controllers_1.uController.getFollowerList(req, res));
 userRouter.get("/followingUsersList/:userId", userAuth_1.userAuth, (req, res) => controllers_1.uController.getFollowingList(req, res));
+//user delete
+userRouter.delete("/", userAuth_1.userAuth, (req, res) => controllers_1.uController.deleteUser(req, res));
+//report 
+userRouter.post('/report/:postId', userAuth_1.userAuth, (req, res) => controllers_1.postController.ReportPost(req, res));
 exports.default = userRouter;

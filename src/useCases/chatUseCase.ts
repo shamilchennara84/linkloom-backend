@@ -50,9 +50,9 @@ export class ChatUseCase {
     }
   }
 
-  async getChats(conversationId: string): Promise<IApiResponse<IChatHistoryItem[] | null>> {
+  async getChats(conversationId: string,page:number,limit:number): Promise<IApiResponse<IChatHistoryItem[] | null>> {
     try {
-      const chatHistory = await this.chatRepository.getChatHistory(conversationId);
+      const chatHistory = await this.chatRepository.getChatHistory(conversationId,page,limit);
       return get200Response(chatHistory);
     } catch (error) {
       return get500Response(error as Error);

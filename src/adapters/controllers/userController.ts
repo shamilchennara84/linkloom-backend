@@ -171,10 +171,16 @@ export class UserController {
   }
 
   async getFollowingList(req: Request, res: Response) {
-     const userId = req.params.userId as unknown as string;
-     console.log("controllerfollowinglist", userId);
-     const apiResponse = await this.userUseCase.userFollowingList(userId);
-     res.status(apiResponse.status).json(apiResponse);
+    const userId = req.params.userId as unknown as string;
+    console.log("controllerfollowinglist", userId);
+    const apiResponse = await this.userUseCase.userFollowingList(userId);
+    res.status(apiResponse.status).json(apiResponse);
+  }
+
+  async deleteUser(req: RequestWithUser, res: Response) {
+    const userId = req.userid as unknown as string;
+    const apiResponse = await this.userUseCase.deleteUser(userId);
+    res.status(apiResponse.status).json(apiResponse);
   }
 }
 // async resendOTP(req: Request, res: Response) {

@@ -350,4 +350,13 @@ export class UserRepository implements IUserRepo {
       },
     ]);
   }
+
+  async deleteUser(userId: string) {
+    const updatedUser = await userModel.findOneAndUpdate(
+      { _id: userId },
+      { $set: { isDeleted: true } },
+      { new: true } // This option ensures that the updated document is returned
+    );
+    return updatedUser;
+  }
 }

@@ -72,7 +72,12 @@ const userSchema: Schema = new Schema<IUser & Document>(
       default: Visibility.Public,
     },
     address: userAddressSchema,
+    isDeleted: {
+      type: Boolean,
+      default: false, 
+    },
   },
+
   { timestamps: true }
 );
 

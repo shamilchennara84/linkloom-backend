@@ -5,6 +5,7 @@ import { IApiResponse, ID } from "../interfaces/common";
 import { ILikeCountRes } from "../interfaces/Schema/likeSchema";
 import { ICommentSchema } from "../interfaces/Schema/commentSchema";
 import { ITagRes } from "../interfaces/Schema/tagSchema";
+import {  IReportRes } from "../interfaces/Schema/reportSchema";
 
 export class PostUseCase {
   constructor(private readonly postRepository: PostRepository) {}
@@ -129,6 +130,30 @@ export class PostUseCase {
       }
 
       return get200Response(response);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async reportPost(userId: ID, postId: ID, reason: string): Promise<IApiResponse<IReportRes | null>> {
+    try {
+      const response = await this.postRepository.reportPost(userId.toString(), postId.toString(), reason);
+      if (!response) {
+        throw new Error("Failed to report the post");
+      }
+
+      return get200Response(response);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async PostRemovalJob() {
+    try {
+      console.log("function called");
+      this.postRepository.checkAndMarkPostsAsRemoved()
+      console.log("Scheduled post removal job successfully.");
+      return { success: true, message: "Scheduled post removal job successfully." };
     } catch (error) {
       return get500Response(error as Error);
     }

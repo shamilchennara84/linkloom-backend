@@ -3,7 +3,7 @@ import { ID } from "../../interfaces/common";
 import { PostUseCase } from "../../useCases/postUseCase";
 import { Request, Response } from "express";
 import { ICommentSchema } from "../../interfaces/Schema/commentSchema";
-
+import { RequestWithUser } from "../../infrastructure/middleware/userAuth";
 
 export class PostController {
   constructor(private postUserCase: PostUseCase) {}
@@ -42,9 +42,9 @@ export class PostController {
   }
   async userSavedPosts(req: Request, res: Response) {
     try {
-       const userId: ID = req.params.userId as unknown as ID;
-        const apiResponse = await this.postUserCase.fetchUserSavedPosts(userId);
-        res.status(apiResponse.status).json(apiResponse);
+      const userId: ID = req.params.userId as unknown as ID;
+      const apiResponse = await this.postUserCase.fetchUserSavedPosts(userId);
+      res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
     }
@@ -144,6 +144,16 @@ export class PostController {
       const commentId: string = req.params.commentId;
       const apiResponse = await this.postUserCase.deleteComments(commentId);
 
+      res.status(apiResponse.status).json(apiResponse);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async ReportPost(req: RequestWithUser, res: Response) {
+    try {
+      const {userId,postId,reason} = req.body
+      const apiResponse = await this.postUserCase.reportPost(userId, postId, reason);
       res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);

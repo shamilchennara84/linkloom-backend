@@ -110,6 +110,15 @@ export class UserUseCase {
           accessToken: "",
           refreshToken: "",
         };
+      } else if (userData.isDeleted) {
+        // Check if the user is deleted
+        return {
+          status: STATUS_CODES.FORBIDDEN,
+          message: "Contact admin to recover account",
+          data: null,
+          accessToken: "",
+          refreshToken: "",
+        };
       } else {
         const passwordMatch = await this.encrypt.comparePassword(password, userData.password as string);
         if (passwordMatch) {
@@ -239,9 +248,9 @@ export class UserUseCase {
 
   async unFollowUser(userId: ID, followerId: ID): Promise<IApiResponse<IFollowCountRes | null>> {
     try {
-      const unfollowdata = await this.userRepository.unfollowUser(userId, followerId);
-      if (!unfollowdata) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
-      return get200Response({ count: unfollowdata.count, status: unfollowdata.status });
+      const unFollowData = await this.userRepository.unfollowUser(userId, followerId);
+      if (!unFollowData) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
+      return get200Response({ count: unFollowData.count, status: unFollowData.status });
     } catch (error) {
       return get500Response(error as Error);
     }
@@ -271,6 +280,15 @@ export class UserUseCase {
       const followingData = await this.userRepository.followingList(userId);
       console.log(followingData, "testing following");
       return get200Response(followingData);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async deleteUser(userId: string): Promise<IApiResponse<IUserRes | null>> {
+    try {
+      const deletedUser = await this.userRepository.deleteUser(userId);
+      return get200Response(deletedUser);
     } catch (error) {
       return get500Response(error as Error);
     }

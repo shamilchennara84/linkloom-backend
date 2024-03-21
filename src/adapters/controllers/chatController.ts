@@ -40,8 +40,9 @@ export class ChatController {
   async getChatHistory(req: Request, res: Response) {
     try {
       console.log("getting chat history");
+      const { page = 1, limit = 10 } = req.query; // Default values for page and limit
       const conversationId = req.params.roomId;
-      const apiResponse = await this.chatUseCase.getChats(conversationId);
+      const apiResponse = await this.chatUseCase.getChats(conversationId,parseInt(page as string),parseInt(limit as string));
       res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);

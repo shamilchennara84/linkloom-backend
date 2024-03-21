@@ -3,9 +3,13 @@ import { mongoConnect } from "./infrastructure/config/db";
 import http from "http";
 import { setupSocketIO } from "./infrastructure/config/socketIO";
 
+
+
 const PORT = process.env.PORT || 3000;
 
 const app = createServer();
+
+
 
 mongoConnect()
   .then(() => {
