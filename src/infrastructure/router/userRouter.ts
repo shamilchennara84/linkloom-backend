@@ -68,5 +68,6 @@ userRouter.patch("/friendrequest/accept/:notificationId", userAuth, (req, res) =
   notificationController.acceptFriendRequest(req, res)
 );
 userRouter.get("/followerUsersList/:userId", userAuth, (req, res) => uController.getFollowerList(req, res));
+userRouter.get("/followingUsersList/:userId", userAuth, (req, res) => uController.getFollowingList(req, res));
 
 export default userRouter;

@@ -326,4 +326,28 @@ export class UserRepository implements IUserRepo {
       },
     ]);
   }
+
+  async followingList(userId: string) {
+    const id = new Types.ObjectId(userId);
+    console.log(id, "hello");
+    return await followerModel.aggregate([
+      { $match: { followerUserId: id } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "followingUserId",
+          foreignField: "_id",
+          as: "followingData",
+        },
+      },
+      {
+        $unwind: "$followingData",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$followingData",
+        },
+      },
+    ]);
+  }
 }
