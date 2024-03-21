@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
 import NotificationModel from "../../entities/models/notificationModel";
-import { INotification, INotificationRes } from "../../interfaces/Schema/notificationSchema";
+import { INotification, INotificationWithUser } from "../../interfaces/Schema/notificationSchema";
 import followerModel from "../../entities/models/followersModel";
 
 export class NotificationRepository {
-  async saveNotification(notificationData: INotification): Promise<INotificationRes> {
+  async saveNotification(notificationData: INotification): Promise<INotificationWithUser> {
     const newNotification = new NotificationModel(notificationData);
     const savedNotification = await newNotification.save();
-    console.log(savedNotification,"savednotification");
-    const result =  await NotificationModel.aggregate([
+    console.log(savedNotification, "savednotification");
+    const result = await NotificationModel.aggregate([
       { $match: { _id: savedNotification._id } },
       {
         $lookup: {
@@ -22,10 +22,10 @@ export class NotificationRepository {
         $unwind: "$relatedUser",
       },
     ]);
-    return result[0]
+    return result[0];
   }
 
-  async getNotifications(userId: string): Promise<INotificationRes[]> {
+  async getNotifications(userId: string): Promise<INotificationWithUser[]> {
     return NotificationModel.aggregate([
       { $match: { userId: new mongoose.Types.ObjectId(userId) } },
       {
@@ -41,8 +41,8 @@ export class NotificationRepository {
       },
     ]);
   }
-  async getNotification(notificationId: string): Promise<INotificationRes | null> {
-    return await NotificationModel.findById(notificationId)
+  async getNotification(notificationId: string): Promise<INotificationWithUser | null> {
+    return await NotificationModel.findById(notificationId);
   }
 
   async deleteNotification(notificationId: string) {
@@ -50,7 +50,10 @@ export class NotificationRepository {
   }
 
   async acceptFriendRequest(relatedUserId: string, userId: string) {
-    return await followerModel.findOneAndUpdate({ followerUserId: relatedUserId, followingUserId: userId },{isApproved:true});
+    return await followerModel.findOneAndUpdate(
+      { followerUserId: relatedUserId, followingUserId: userId },
+      { isApproved: true }
+    );
   }
   async rejectFriendRequest(relatedUserId: string, userId: string) {
     return await followerModel.findOneAndDelete({ followerUserId: relatedUserId, followingUserId: userId });

@@ -14,7 +14,10 @@ export interface INotification {
 
 export interface INotificationRes extends INotification {
   _id: string;
-  relatedUser:IUserRes
+}
+
+export interface INotificationWithUser extends INotificationRes {
+  relatedUser: IUserRes;
 }
 
 export enum NotificationType {

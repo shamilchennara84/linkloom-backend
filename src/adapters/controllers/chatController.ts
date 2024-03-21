@@ -39,6 +39,7 @@ export class ChatController {
 
   async getChatHistory(req: Request, res: Response) {
     try {
+      console.log("getting chat history");
       const conversationId = req.params.roomId;
       const apiResponse = await this.chatUseCase.getChats(conversationId);
       res.status(apiResponse.status).json(apiResponse);

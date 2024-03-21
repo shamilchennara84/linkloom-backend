@@ -24,6 +24,7 @@ import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
 import path from "path";
 import { IFollowCountRes, IFollowStatus, IFollowerReq, IUserSearchItem } from "../interfaces/Schema/followerSchema";
+import { Schema } from "mongoose";
 
 export class UserUseCase {
   constructor(
@@ -250,6 +251,16 @@ export class UserUseCase {
     try {
       const usersData = await this.userRepository.searchUsers(userId, query);
       return get200Response(usersData);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async userFollowersList(userId: string): Promise<IApiResponse<IUserRes[] | null>> {
+    try {
+      const followersData = await this.userRepository.followersList(userId);
+      console.log(followersData,"testing followers");
+      return get200Response(followersData);
     } catch (error) {
       return get500Response(error as Error);
     }

@@ -11,8 +11,7 @@ import {
   IFollowerRes,
   IUserSearchItem,
 } from "../../interfaces/Schema/followerSchema";
-import { Types } from "mongoose";
-
+import {  Types } from "mongoose";
 
 export class UserRepository implements IUserRepo {
   async saveUser(user: IUserAuth | IUserSocialAuth): Promise<IUser> {
@@ -81,12 +80,12 @@ export class UserRepository implements IUserRepo {
         fullname: user.fullname,
         mobile: user.mobile,
         dob: user.dob,
-        bio:user.bio,
+        bio: user.bio,
         visibility: user.visibility,
       },
       { new: true }
     );
-    
+
     return updated;
   }
 
@@ -222,7 +221,7 @@ export class UserRepository implements IUserRepo {
           username: 1,
           fullname: 1,
           email: 1,
-          bio:1,
+          bio: 1,
           password: 1,
           mobile: 1,
           dob: 1,
@@ -304,5 +303,27 @@ export class UserRepository implements IUserRepo {
     return result;
   }
 
-  
+  async followersList(userId: string) {
+    const id = new Types.ObjectId(userId);
+    console.log(id, "hello");
+    return await followerModel.aggregate([
+      { $match: { followingUserId: id } },
+      {
+        $lookup: {
+          from: "users",
+          localField: "followerUserId",
+          foreignField: "_id",
+          as: "followerData",
+        },
+      },
+      {
+        $unwind: "$followerData",
+      },
+      {
+        $replaceRoot: {
+          newRoot: "$followerData",
+        },
+      },
+    ]);
+  }
 }

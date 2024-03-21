@@ -49,7 +49,8 @@ userRouter.get("/chat/history/:roomId", userAuth_1.userAuth, (req, res) => contr
 //userSearch
 userRouter.get("/userSearch", userAuth_1.userAuth, (req, res) => controllers_1.uController.userSearch(req, res));
 userRouter.get("/notifications", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.getAllNotification(req, res));
-userRouter.delete("/notifications:notificationId", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.deleteNotification(req, res));
+userRouter.delete("/notification/:notificationId", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.deleteNotification(req, res));
 userRouter.delete("/friendrequest/decline/:notificationId", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.rejectFriendRequest(req, res));
 userRouter.patch("/friendrequest/accept/:notificationId", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.acceptFriendRequest(req, res));
+userRouter.get("/followerUsersList/:userId", userAuth_1.userAuth, (req, res) => controllers_1.uController.getFollowerList(req, res));
 exports.default = userRouter;

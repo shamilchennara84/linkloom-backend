@@ -122,6 +122,7 @@ export class UserController {
   }
 
   async followUser(req: RequestWithUser, res: Response) {
+    console.log("backend called follow user");
     const userId = req.userid as ID;
     const followerId = req.params.userId as unknown as ID;
     const status = req.body.status;
@@ -139,10 +140,7 @@ export class UserController {
     } else if (status === "Request") {
       followData.isApproved = false;
       apiResponse = await this.userUseCase.followUser(followData);
-      // if(apiResponse){
-      // TODO:
-      //send notification
-      // }
+      
     } else if (status === "Following") {
       apiResponse = await this.userUseCase.unFollowUser(userId, followerId);
     }
@@ -164,6 +162,12 @@ export class UserController {
     const userId = req.userid as ID;
     const query = req.query?.query as string;
     const apiResponse = await this.userUseCase.userSearch(userId, query);
+    res.status(apiResponse.status).json(apiResponse);
+  }
+  async getFollowerList(req: Request, res: Response) {
+    const userId = req.params.userId as unknown as string;
+    console.log('controllerfollowerlist',userId);
+    const apiResponse = await this.userUseCase.userFollowersList(userId);
     res.status(apiResponse.status).json(apiResponse);
   }
 }

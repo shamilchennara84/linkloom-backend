@@ -7,7 +7,7 @@ import { IFollowCountRes, IFollowStatus, IUserSearchItem } from "./Schema/follow
 import { IChatHistoryItem, IConversation, IConversationListItem } from "./Schema/chatSchema";
 import { IUserPerMonth, IUserPerYear, IAdminCardData } from "./Schema/adminSchema";
 import { ITagRes } from "./Schema/tagSchema";
-import { INotificationRes } from "./Schema/notificationSchema";
+import { INotificationRes, INotificationWithUser } from "./Schema/notificationSchema";
 
 export type ID = Schema.Types.ObjectId;
 
@@ -46,8 +46,9 @@ export type AllResTypes =
   | IPostPerYear[]
   | IAdminCardData
   | ITagRes
+  | INotificationWithUser
+  | INotificationWithUser[]
   | INotificationRes
-  | INotificationRes[]
   | null;
 
 export interface IApiResponse<T extends AllResTypes> {

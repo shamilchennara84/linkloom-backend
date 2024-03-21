@@ -1,3 +1,5 @@
+
+
 import { RequestWithUser } from "../../infrastructure/middleware/userAuth";
 import { ID } from "../../interfaces/common";
 import { NotificationUseCase } from "../../useCases/notificationUseCases";
@@ -8,9 +10,9 @@ export class NotificationController {
 
   async getAllNotification(req: RequestWithUser, res: Response) {
     try {
-     
       const userId = req.userid as ID;
       const apiResponse = await this.notificationUseCase.getNotifications(userId.toString());
+
       res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
       console.log(error);
@@ -19,7 +21,9 @@ export class NotificationController {
 
   async deleteNotification(req: Request, res: Response) {
     try {
+      console.log("notification deleted");
       const notificationId = req.params.notificationId;
+      console.log("notificationId", notificationId);
       const apiResponse = await this.notificationUseCase.deleteNotification(notificationId);
       res.status(apiResponse.status).json(apiResponse);
     } catch (error) {
@@ -27,7 +31,7 @@ export class NotificationController {
     }
   }
 
-  async acceptFriendRequest(req: Request, res: Response){
+  async acceptFriendRequest(req: Request, res: Response) {
     try {
       console.log("accept");
       const notificationId = req.params.notificationId;
@@ -47,4 +51,6 @@ export class NotificationController {
       console.error("Error rejecting friend request:", error); // More informative error message
     }
   }
+
+
 }
