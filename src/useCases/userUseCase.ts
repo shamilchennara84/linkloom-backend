@@ -24,7 +24,8 @@ import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
 import path from "path";
 import { IFollowCountRes, IFollowStatus, IFollowerReq, IUserSearchItem } from "../interfaces/Schema/followerSchema";
-
+import { IReportsAndCount } from "../interfaces/Schema/reportSchema";
+import { IPostRes } from "../interfaces/Schema/postSchema";
 
 export class UserUseCase {
   constructor(
@@ -168,10 +169,36 @@ export class UserUseCase {
     }
   }
 
+  async getPostReports(
+    page: number,
+    limit: number,
+    searchQuery: string | undefined
+  ): Promise<IApiResponse<IReportsAndCount | null>> {
+    try {
+      if (isNaN(page)) page = 1;
+      if (isNaN(limit)) limit = 10;
+      if (!searchQuery) searchQuery = "";
+      const reports = await this.userRepository.getAllReportWithStatus(page, limit, searchQuery);
+      console.log(reports);
+      const reportCount = await this.userRepository.findReportCount(searchQuery);
+      return get200Response({ reports, reportCount });
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
   async blockUser(userId: string) {
     try {
       await this.userRepository.blockUnblockUser(userId);
       return get200Response(null);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async resolveReport(reportId: string): Promise<IApiResponse<IPostRes | null>> {
+    try {
+      const report = await this.userRepository.resolveReport(reportId);
+      return get200Response(report);
     } catch (error) {
       return get500Response(error as Error);
     }

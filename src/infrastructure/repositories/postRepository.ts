@@ -45,6 +45,7 @@ export class PostRepository implements IPostRepo {
     const id = new Types.ObjectId(userId);
 
     const postData = await postModel.aggregate([
+       { $match: { isRemoved: { $ne: true } } },
       { $sort: { createdAt: -1 } },
       { $match: { userId: { $ne: id } } },
       {

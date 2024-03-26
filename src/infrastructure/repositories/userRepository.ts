@@ -11,7 +11,10 @@ import {
   IFollowerRes,
   IUserSearchItem,
 } from "../../interfaces/Schema/followerSchema";
-import {  Types } from "mongoose";
+import { Types } from "mongoose";
+import { IReportStatusRes } from "../../interfaces/Schema/reportSchema";
+import reportModel from "../../entities/models/reportModel";
+import postModel from "../../entities/models/postModel";
 
 export class UserRepository implements IUserRepo {
   async saveUser(user: IUserAuth | IUserSocialAuth): Promise<IUser> {
@@ -44,11 +47,68 @@ export class UserRepository implements IUserRepo {
       .exec();
   }
 
+  async getAllReportWithStatus(page: number, limit: number, searchQuery: string): Promise<[] | IReportStatusRes[]> {
+    try {
+      const regexString = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // Escape special characters
+      const regexOptions = "i"; // Case-insensitive
+      return await reportModel
+        .aggregate([
+          {
+            $match: {
+              $or: [{ contentType: { $regex: regexString, $options: regexOptions } }],
+            },
+          },
+          {
+            $lookup: {
+              from: "posts",
+              localField: "contentId",
+              foreignField: "_id",
+              as: "postDetails",
+            },
+          },
+          {
+            $unwind: "$postDetails",
+          },
+          {
+            $addFields: {
+              isResolved: "$postDetails.isRemoved",
+            },
+          },
+          {
+            $skip: (page - 1) * limit,
+          },
+          {
+            $limit: limit,
+          },
+          {
+            $project: {
+              postDetails: 0,
+            },
+          },
+        ])
+        .exec();
+    } catch (error) {
+      console.error("Error executing aggregation pipeline:", error);
+      throw error; // Rethrow the error to handle it further up the call stack
+    }
+  }
+
   async findUserCount(searchQuery: string = ""): Promise<number> {
     const regex = new RegExp(searchQuery, "i");
     return await userModel
       .find({
         $or: [{ name: { $regex: regex } }, { email: { $regex: regex } }, { mobile: { $regex: regex } }],
+      })
+      .countDocuments()
+      .exec();
+  }
+
+  async findReportCount(searchQuery: string = " "): Promise<number> {
+    const regexString = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // Escape special characters
+    const regexOptions = "i"; // Case-insensitive
+    return await reportModel
+      .find({
+        $or: [{ contentType: { $regex: regexString, $options: regexOptions } }],
       })
       .countDocuments()
       .exec();
@@ -358,5 +418,22 @@ export class UserRepository implements IUserRepo {
       { new: true } // This option ensures that the updated document is returned
     );
     return updatedUser;
+  }
+
+  async resolveReport(reportId: string) {
+    const report = await reportModel.findById(reportId);
+    if (!report) {
+      throw new Error("Report not found.");
+    }
+    const contentId = report.contentId;
+
+    const post = await postModel.findById(contentId);
+    if (!post) {
+      throw new Error("Post not found.");
+    }
+    post.isRemoved = true;
+    await post.save();
+
+    return post;
   }
 }

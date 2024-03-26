@@ -14,5 +14,13 @@ export interface IReportReq {
 }
 export interface IReportRes extends IReportReq {
   _id: ID;
- 
+}
+export interface IReportStatusRes extends IReportRes {
+  createdAt: Date;
+  isResolved: boolean;
+}
+
+export interface IReportsAndCount {
+  reports: IReportStatusRes[];
+  reportCount: number;
 }
