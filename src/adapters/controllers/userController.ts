@@ -4,13 +4,13 @@ import { GenerateOTP } from "../../providers/otpGenerator";
 import { IUserAuth, IUserUpdate } from "../../interfaces/Schema/userSchema";
 import { STATUS_CODES } from "../../constants/httpStatusCodes";
 import { ITempUserReq } from "../../interfaces/Schema/tempUserSchema";
-import { IapiResponse, ID } from "../../interfaces/common";
+import { IApiResponse, ID } from "../../interfaces/common";
 import { Request, Response } from "express-serve-static-core";
 import { RequestWithTempUser } from "../../infrastructure/middleware/validateTokenAndTempUser.ts";
 
 import { RequestWithUser } from "../../infrastructure/middleware/userAuth";
 import { IFollowCountRes, IFollowerReq } from "../../interfaces/Schema/followerSchema";
-import { getErrorResponse } from "../../infrastructure/helperfunctions/response";
+import { getErrorResponse } from "../../infrastructure/helperFunctions/response";
 
 export class UserController {
   constructor(private userUseCase: UserUseCase, private otpGenerator: GenerateOTP, private encrypt: Encrypt) {}
@@ -62,7 +62,7 @@ export class UserController {
 
       // Directly use the user object from the request
       const user = req.user;
-      console.log(otp, user.otp);
+
       if (otp == user.otp) {
         // If OTP matches, save user data to the user collection
         const savedData = await this.userUseCase.saveUserDetails({
@@ -78,7 +78,7 @@ export class UserController {
         if (!tries) {
           return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: `maximum try for OTP exceeded` });
         }
-        console.log("otp didn't match");
+
         return res.status(STATUS_CODES.UNAUTHORIZED).json({ message: "Invalid OTP" });
       }
     } catch (error) {
@@ -122,6 +122,7 @@ export class UserController {
   }
 
   async followUser(req: RequestWithUser, res: Response) {
+    console.log("backend called follow user");
     const userId = req.userid as ID;
     const followerId = req.params.userId as unknown as ID;
     const status = req.body.status;
@@ -130,7 +131,7 @@ export class UserController {
       followingUserId: followerId,
       isApproved: true,
     };
-    let apiResponse: IapiResponse<IFollowCountRes | null> = getErrorResponse(
+    let apiResponse: IApiResponse<IFollowCountRes | null> = getErrorResponse(
       STATUS_CODES.BAD_REQUEST,
       "Invalid status"
     );
@@ -160,6 +161,25 @@ export class UserController {
     const userId = req.userid as ID;
     const query = req.query?.query as string;
     const apiResponse = await this.userUseCase.userSearch(userId, query);
+    res.status(apiResponse.status).json(apiResponse);
+  }
+  async getFollowerList(req: Request, res: Response) {
+    const userId = req.params.userId as unknown as string;
+    console.log("controllerfollowerlist", userId);
+    const apiResponse = await this.userUseCase.userFollowersList(userId);
+    res.status(apiResponse.status).json(apiResponse);
+  }
+
+  async getFollowingList(req: Request, res: Response) {
+    const userId = req.params.userId as unknown as string;
+    console.log("controllerfollowinglist", userId);
+    const apiResponse = await this.userUseCase.userFollowingList(userId);
+    res.status(apiResponse.status).json(apiResponse);
+  }
+
+  async deleteUser(req: RequestWithUser, res: Response) {
+    const userId = req.userid as unknown as string;
+    const apiResponse = await this.userUseCase.deleteUser(userId);
     res.status(apiResponse.status).json(apiResponse);
   }
 }

@@ -17,6 +17,11 @@ export interface IChatHistoryItem extends IChatReq {
   sendersInfo: IUser;
 }
 
+export interface IChatHistoryResponse {
+  data: IChatHistoryItem[];
+  isLastSet: boolean;
+}
+
 // Interface for Chat document
 export interface IChatReq {
   conversationId: ID;

@@ -30,6 +30,10 @@ const userSchema: Schema = new Schema<IUser & Document>(
         return !this.isGoogleAuth;
       },
     },
+    bio: {
+      type: String,
+      default: "Add Bio",
+    },
     isBlocked: {
       type: Boolean,
       default: false,
@@ -64,20 +68,22 @@ const userSchema: Schema = new Schema<IUser & Document>(
     premiumExpiry: { type: Date, default: null },
     visibility: {
       type: String,
-      enum: Object.values(Visibility), 
-      default: Visibility.Public, 
+      enum: Object.values(Visibility),
+      default: Visibility.Public,
     },
     address: userAddressSchema,
+    isDeleted: {
+      type: Boolean,
+      default: false, 
+    },
   },
+
   { timestamps: true }
 );
 
 userSchema.add(emailSchema);
 userSchema.add(mobileSchema);
 
-const userModel: Model<IUser & Document> = mongoose.model<IUser & Document>(
-  "Users",
-  userSchema
-);
+const userModel: Model<IUser & Document> = mongoose.model<IUser & Document>("Users", userSchema);
 
 export default userModel;

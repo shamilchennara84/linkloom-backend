@@ -23,14 +23,19 @@ userRouter.patch("/update/profileimage/:userId", userAuth_1.userAuth, multer_1.u
 userRouter.patch("/remove/profileimage/:userId", userAuth_1.userAuth, (req, res) => controllers_1.uController.removeUserProfileDp(req, res));
 // Post Routes
 userRouter.post("/addPost", multer_1.upload.single("Image"), (req, res) => controllers_1.postController.savePost(req, res));
-userRouter.get("/userPost/:userId", (req, res) => controllers_1.postController.userPosts(req, res));
 userRouter.get("/homePost/:userId", (req, res) => controllers_1.postController.HomePosts(req, res));
+userRouter.get("/userPost/:userId", (req, res) => controllers_1.postController.userPosts(req, res));
+userRouter.get("/usersavedPost/:userId", (req, res) => controllers_1.postController.userSavedPosts(req, res));
 // Post Like and Unlike Routes
 userRouter.get("/like/:userId/:postId", (req, res) => controllers_1.postController.LikePost(req, res));
 userRouter.get("/unlike/:userId/:postId", (req, res) => controllers_1.postController.UnlikePost(req, res));
+//post tag and untag
+userRouter.get("/tag/:userId/:postId", (req, res) => controllers_1.postController.TagPost(req, res));
+userRouter.get("/untag/:userId/:postId", (req, res) => controllers_1.postController.UnTagPost(req, res));
 // Comment Routes
 userRouter.get("/comments/:postId", (req, res) => controllers_1.postController.getComments(req, res));
 userRouter.post("/createcomment", (req, res) => controllers_1.postController.createComment(req, res));
+userRouter.delete("/comments/:commentId", (req, res) => controllers_1.postController.deleteComments(req, res));
 // Follow and Followed Users Routes
 userRouter
     .route("/follow/:userId")
@@ -41,6 +46,16 @@ userRouter.get("/conversation/:userId", userAuth_1.userAuth, (req, res) => contr
 userRouter.get("/conversations/", userAuth_1.userAuth, (req, res) => controllers_1.chatController.getConversations(req, res));
 userRouter.get("/followedUsers", userAuth_1.userAuth, (req, res) => controllers_1.chatController.getFollowedUser(req, res));
 userRouter.get("/chat/history/:roomId", userAuth_1.userAuth, (req, res) => controllers_1.chatController.getChatHistory(req, res));
-//usersearch 
+//userSearch
 userRouter.get("/userSearch", userAuth_1.userAuth, (req, res) => controllers_1.uController.userSearch(req, res));
+userRouter.get("/notifications", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.getAllNotification(req, res));
+userRouter.delete("/notification/:notificationId", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.deleteNotification(req, res));
+userRouter.delete("/friendrequest/decline/:notificationId", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.rejectFriendRequest(req, res));
+userRouter.patch("/friendrequest/accept/:notificationId", userAuth_1.userAuth, (req, res) => controllers_1.notificationController.acceptFriendRequest(req, res));
+userRouter.get("/followerUsersList/:userId", userAuth_1.userAuth, (req, res) => controllers_1.uController.getFollowerList(req, res));
+userRouter.get("/followingUsersList/:userId", userAuth_1.userAuth, (req, res) => controllers_1.uController.getFollowingList(req, res));
+//user delete
+userRouter.delete("/", userAuth_1.userAuth, (req, res) => controllers_1.uController.deleteUser(req, res));
+//report 
+userRouter.post('/report', userAuth_1.userAuth, (req, res) => controllers_1.postController.ReportPost(req, res));
 exports.default = userRouter;

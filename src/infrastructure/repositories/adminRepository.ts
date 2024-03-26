@@ -7,6 +7,7 @@ import { IPostPerMonth } from "../../interfaces/Schema/postSchema";
 import postModel from "../../entities/models/postModel";
 import likeModel from "../../entities/models/likeModel";
 import commentModel from "../../entities/models/commentModel";
+import reportModel from "../../entities/models/reportModel";
 
 interface MonthCount {
   count: number;
@@ -84,7 +85,7 @@ export class AdminRepository implements IAdminRepo {
         },
       },
     ]);
-    console.log(userdata);
+
     return userdata;
   }
 
@@ -106,7 +107,7 @@ export class AdminRepository implements IAdminRepo {
         },
       },
     ]);
-    console.log(userdata);
+
     return userdata;
   }
 
@@ -116,28 +117,26 @@ export class AdminRepository implements IAdminRepo {
       this.getLikesCountByMonth(),
       this.getCommentsCountByMonth(),
     ]);
-    console.log(postsCount, likesCount, commentsCount);
+
     const postData = await this.mapToPostPerMonth(postsCount, likesCount, commentsCount);
 
     return postData;
   }
   async getPostsCountByMonth(): Promise<MonthCount[]> {
     const postsCount = await postModel.aggregate(countperMonth);
-    console.log(postsCount);
 
     return postsCount;
   }
 
   async getLikesCountByMonth(): Promise<MonthCount[]> {
     const likesCount = await likeModel.aggregate(countperMonth);
-    console.log(likesCount);
 
     return likesCount;
   }
 
   async getCommentsCountByMonth(): Promise<MonthCount[]> {
     const commentCount = await commentModel.aggregate(countperMonth);
-    console.log(commentCount);
+
     return commentCount;
   }
   async mapToPostPerMonth(
@@ -177,16 +176,15 @@ export class AdminRepository implements IAdminRepo {
       }
     });
 
-    console.log("result", combinedCountsArray);
     return combinedCountsArray;
   }
 
   async getCardData(): Promise<IAdminCardData> {
     const ActiveUser = await userModel.find().countDocuments();
     const Posts = await postModel.find().countDocuments();
-    const Reports = 34;
-    const DeletedUser = 34;
-
+    const Reports = await reportModel.find().countDocuments();
+    const DeletedUser = await userModel.find({ isDeleted: true }).countDocuments();
+    console.log(DeletedUser);
     return { ActiveUser, Posts, Reports, DeletedUser };
   }
   // async postPerYear() {

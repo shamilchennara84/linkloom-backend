@@ -57,7 +57,6 @@ export class ChatRepository implements IChatRepo {
         },
       },
     ]);
-    console.log(usersData, "userdata");
 
     if (usersData && usersData.length !== 0) {
       const followersData = usersData.map((val) => val.followedUser);
@@ -66,9 +65,12 @@ export class ChatRepository implements IChatRepo {
       return [];
     }
   }
-  async getChatHistory(conversationId: string): Promise<IChatHistoryItem[]> {
-    console.log(conversationId);
+  async getChatHistory(conversationId: string, page: number, limit: number): Promise<IChatHistoryItem[]> {
+    
+    const skip = (page - 1) * limit;
+
     await ChatModel.updateMany({ conversationId: conversationId }, { read: true });
+
     const combinedData = await ChatModel.aggregate([
       {
         $match: { conversationId: new mongoose.Types.ObjectId(conversationId) },
@@ -81,8 +83,19 @@ export class ChatRepository implements IChatRepo {
           as: "sendersInfo",
         },
       },
+      {
+        $sort: { createdAt: -1 },
+      },
+      {
+        $skip: skip,
+      },
+      {
+        $limit: limit,
+      },
     ]);
-    // console.log(combinedData[0].sendersInfo, "comb");
+    // console.log(combinedData);
+    combinedData.reverse()
+    console.log(page);
     return combinedData.length > 0 ? combinedData : [];
   }
 
@@ -155,7 +168,6 @@ export class ChatRepository implements IChatRepo {
           },
         },
       ]);
-      console.log(conversations);
 
       return conversations || [];
     } catch (error) {

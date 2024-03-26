@@ -6,6 +6,7 @@ export interface IUser {
   username: string;
   fullname: string;
   email: string;
+  bio?:string;
   password?: string;
   mobile: string;
   dob?: Date; // need to check
@@ -18,6 +19,7 @@ export interface IUser {
   visibility: "public" | "private";
   coords?: ICoords;
   address?: IUserAddress;
+  isDeleted?:boolean
 }
 
 export interface IUserRes extends IUser {}

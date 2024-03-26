@@ -4,7 +4,7 @@ import { log } from "console";
 import * as fs from "fs";
 import { MAX_OTP_TRY, OTP_TIMER } from "../constants/constants";
 import { STATUS_CODES } from "../constants/httpStatusCodes";
-import { get200Response, get500Response, getErrorResponse } from "../infrastructure/helperfunctions/response";
+import { get200Response, get500Response, getErrorResponse } from "../infrastructure/helperFunctions/response";
 import { TempUserRepository } from "../infrastructure/repositories/tempUserRepository";
 import { UserRepository } from "../infrastructure/repositories/userRepository";
 import { ITempUserReq, ITempUserRes } from "../interfaces/Schema/tempUserSchema";
@@ -18,12 +18,14 @@ import {
   IApiUserRes,
   IUserRes,
 } from "../interfaces/Schema/userSchema";
-import { IapiResponse, ID } from "../interfaces/common";
+import { IApiResponse, ID } from "../interfaces/common";
 import { MailSender } from "../providers/MailSender";
 import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
 import path from "path";
 import { IFollowCountRes, IFollowStatus, IFollowerReq, IUserSearchItem } from "../interfaces/Schema/followerSchema";
+import { IReportsAndCount } from "../interfaces/Schema/reportSchema";
+import { IPostRes } from "../interfaces/Schema/postSchema";
 
 export class UserUseCase {
   constructor(
@@ -75,7 +77,6 @@ export class UserUseCase {
 
   async saveUserDetails(userData: IUserAuth | IUserSocialAuth): Promise<IApiUserAuthRes> {
     const user = await this.userRepository.saveUser(userData);
-    console.log("user data saved, on usecase", user);
     const accessToken = this.jwt.generateAccessToken(user._id);
     const refreshToken = this.jwt.generateRefreshToken(user._id);
     return {
@@ -110,13 +111,20 @@ export class UserUseCase {
           accessToken: "",
           refreshToken: "",
         };
+      } else if (userData.isDeleted) {
+        // Check if the user is deleted
+        return {
+          status: STATUS_CODES.FORBIDDEN,
+          message: "Contact admin to recover account",
+          data: null,
+          accessToken: "",
+          refreshToken: "",
+        };
       } else {
         const passwordMatch = await this.encrypt.comparePassword(password, userData.password as string);
         if (passwordMatch) {
           const accessToken = this.jwt.generateAccessToken(userData._id);
-          console.log("accessToken", accessToken);
           const refreshToken = this.jwt.generateRefreshToken(userData._id);
-          console.log("refreshToken", refreshToken);
           return {
             status: STATUS_CODES.OK,
             message: "Success",
@@ -148,7 +156,7 @@ export class UserUseCase {
     page: number,
     limit: number,
     searchQuery: string | undefined
-  ): Promise<IapiResponse<IUsersAndCount | null>> {
+  ): Promise<IApiResponse<IUsersAndCount | null>> {
     try {
       if (isNaN(page)) page = 1;
       if (isNaN(limit)) limit = 10;
@@ -161,10 +169,36 @@ export class UserUseCase {
     }
   }
 
+  async getPostReports(
+    page: number,
+    limit: number,
+    searchQuery: string | undefined
+  ): Promise<IApiResponse<IReportsAndCount | null>> {
+    try {
+      if (isNaN(page)) page = 1;
+      if (isNaN(limit)) limit = 10;
+      if (!searchQuery) searchQuery = "";
+      const reports = await this.userRepository.getAllReportWithStatus(page, limit, searchQuery);
+      console.log(reports);
+      const reportCount = await this.userRepository.findReportCount(searchQuery);
+      return get200Response({ reports, reportCount });
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
   async blockUser(userId: string) {
     try {
       await this.userRepository.blockUnblockUser(userId);
       return get200Response(null);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async resolveReport(reportId: string): Promise<IApiResponse<IPostRes | null>> {
+    try {
+      const report = await this.userRepository.resolveReport(reportId);
+      return get200Response(report);
     } catch (error) {
       return get500Response(error as Error);
     }
@@ -217,7 +251,7 @@ export class UserUseCase {
     }
   }
 
-  async followUser(followData: IFollowerReq): Promise<IapiResponse<IFollowCountRes | null>> {
+  async followUser(followData: IFollowerReq): Promise<IApiResponse<IFollowCountRes | null>> {
     try {
       const followersData = await this.userRepository.followUser(followData);
       if (!followersData) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
@@ -227,7 +261,7 @@ export class UserUseCase {
     }
   }
 
-  async followStatus(userId: ID, followerId: ID): Promise<IapiResponse<IFollowStatus | null>> {
+  async followStatus(userId: ID, followerId: ID): Promise<IApiResponse<IFollowStatus | null>> {
     try {
       const followStatusData = await this.userRepository.followStatus(userId, followerId);
       if (!followStatusData) {
@@ -239,20 +273,49 @@ export class UserUseCase {
     }
   }
 
-  async unFollowUser(userId: ID, followerId: ID): Promise<IapiResponse<IFollowCountRes | null>> {
+  async unFollowUser(userId: ID, followerId: ID): Promise<IApiResponse<IFollowCountRes | null>> {
     try {
-      const unfollowdata = await this.userRepository.unfollowUser(userId, followerId);
-      if (!unfollowdata) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
-      return get200Response({ count: unfollowdata.count, status: unfollowdata.status });
+      const unFollowData = await this.userRepository.unfollowUser(userId, followerId);
+      if (!unFollowData) return getErrorResponse(STATUS_CODES.BAD_REQUEST, "Invalid userId");
+      return get200Response({ count: unFollowData.count, status: unFollowData.status });
     } catch (error) {
       return get500Response(error as Error);
     }
   }
 
-  async userSearch(userId: ID, query: string): Promise<IapiResponse<IUserSearchItem[] | null>> {
+  async userSearch(userId: ID, query: string): Promise<IApiResponse<IUserSearchItem[] | null>> {
     try {
       const usersData = await this.userRepository.searchUsers(userId, query);
       return get200Response(usersData);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async userFollowersList(userId: string): Promise<IApiResponse<IUserRes[] | null>> {
+    try {
+      const followersData = await this.userRepository.followersList(userId);
+      console.log(followersData, "testing followers");
+      return get200Response(followersData);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async userFollowingList(userId: string): Promise<IApiResponse<IUserRes[] | null>> {
+    try {
+      const followingData = await this.userRepository.followingList(userId);
+      console.log(followingData, "testing following");
+      return get200Response(followingData);
+    } catch (error) {
+      return get500Response(error as Error);
+    }
+  }
+
+  async deleteUser(userId: string): Promise<IApiResponse<IUserRes | null>> {
+    try {
+      const deletedUser = await this.userRepository.deleteUser(userId);
+      return get200Response(deletedUser);
     } catch (error) {
       return get500Response(error as Error);
     }

@@ -1,11 +1,11 @@
 import { STATUS_CODES } from "../constants/httpStatusCodes";
-import { get200Response, get500Response } from "../infrastructure/helperfunctions/response";
+import { get200Response, get500Response } from "../infrastructure/helperFunctions/response";
 import { AdminRepository } from "../infrastructure/repositories/adminRepository";
 
 import { IApiAdminAuthRes, IUserPerMonth, IUserPerYear } from "../interfaces/Schema/adminSchema";
 import { IPostPerMonth } from "../interfaces/Schema/postSchema";
 import { IAdminCardData } from "../interfaces/Schema/userSchema";
-import { IapiResponse } from "../interfaces/common";
+import { IApiResponse } from "../interfaces/common";
 import { Encrypt } from "../providers/bcryptPassword";
 import { JWTtoken } from "../providers/jwtToken";
 
@@ -50,7 +50,7 @@ export class AdminUseCase {
     }
   }
 
-  async newUsersPerMonth(): Promise<IapiResponse<IUserPerMonth[] | null>> {
+  async newUsersPerMonth(): Promise<IApiResponse<IUserPerMonth[] | null>> {
     try {
       const userData = await this.adminRepository.findUserPerMonth();
       return get200Response(userData);
@@ -59,7 +59,7 @@ export class AdminUseCase {
     }
   }
 
-  async newUsersPerYear(): Promise<IapiResponse<IUserPerYear[] | null>> {
+  async newUsersPerYear(): Promise<IApiResponse<IUserPerYear[] | null>> {
     try {
       const userData = await this.adminRepository.findUserPerYear();
       return get200Response(userData);
@@ -76,7 +76,7 @@ export class AdminUseCase {
   //  }
   // }
 
-  async postmatrixPerMonth(): Promise<IapiResponse<IPostPerMonth[] | null>> {
+  async postMatrixPerMonth(): Promise<IApiResponse<IPostPerMonth[] | null>> {
     try {
       const postData = await this.adminRepository.postPerMonth();
       return get200Response(postData);
@@ -85,7 +85,7 @@ export class AdminUseCase {
     }
   }
 
-  async getIAdminCardData(): Promise<IapiResponse<IAdminCardData | null>> {
+  async getIAdminCardData(): Promise<IApiResponse<IAdminCardData | null>> {
     try {
       const cardData = await this.adminRepository.getCardData();
       return get200Response(cardData);
