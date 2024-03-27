@@ -10,7 +10,8 @@ import { RequestWithTempUser } from "../../infrastructure/middleware/validateTok
 
 import { RequestWithUser } from "../../infrastructure/middleware/userAuth";
 import { IFollowCountRes, IFollowerReq } from "../../interfaces/Schema/followerSchema";
-import * as response from "../../infrastructure/helperFunctions/response";
+import { getErrorResponse } from "../../infrastructure/helperFunctions/response";
+
 
 export class UserController {
   constructor(private userUseCase: UserUseCase, private otpGenerator: GenerateOTP, private encrypt: Encrypt) {}
@@ -131,7 +132,7 @@ export class UserController {
       followingUserId: followerId,
       isApproved: true,
     };
-    let apiResponse: IApiResponse<IFollowCountRes | null> = response.getErrorResponse(
+    let apiResponse: IApiResponse<IFollowCountRes | null> = getErrorResponse(
       STATUS_CODES.BAD_REQUEST,
       "Invalid status"
     );
