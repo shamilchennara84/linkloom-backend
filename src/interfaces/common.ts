@@ -60,3 +60,5 @@ export interface IApiResponse<T extends AllResTypes> {
   message: string;
   data: T;
 }
+
+
