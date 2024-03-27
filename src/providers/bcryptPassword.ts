@@ -1,5 +1,5 @@
 import { HashPassword } from "../interfaces/hashPassword";
-import bcrypt from 'bcrypt'
+import bcrypt from 'bcryptjs'
 
 
 export class Encrypt implements HashPassword{

@@ -1,0 +1,31 @@
+node_modules
+
+# Ignore the .git directory
+.git
+
+# Ignore log files
+*.log
+
+# Ignore environment files
+.env
+.env.example
+
+# Ignore the dist directory if you're compiling TypeScript to JavaScript
+# This is useful if you're compiling TypeScript files inside the Docker container
+# and you don't want to include the compiled JavaScript files in the image
+dist
+
+# Ignore any temporary files or directories
+*.tmp
+*.swp
+*.swo
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore IDE/editor files
+.vscode
+.idea
+
+.prettierrc

@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+ linkloom-backend:
+    image: linkloom-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/linkloom
+      - JWT_SECRET_KEY=jwtsecretabc
+      - PORT=3000
+      - CORS_URI=http://localhost:4200
+      - EMAIL=linkloom789@gmail.com
+      - PASSWORD=tuhkxtvpynnwmpdu
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: npm run dev
+    depends_on:
+      - mongo
+
+ mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    container_name: mongo_container
+
+volumes:
+ mongo-data:

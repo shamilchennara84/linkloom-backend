@@ -15,6 +15,14 @@ const app = (0, app_1.createServer)();
         const server = http_1.default.createServer(app);
         (0, socketIO_1.setupSocketIO)(server);
         server.listen(PORT, () => console.log(`Listening to PORT ${PORT}`));
+        server.on("error", (error) => {
+            if (error.code === "EADDRINUSE") {
+                console.error(`Port ${PORT} is already in use. Please choose a different port.`);
+            }
+            else {
+                console.error("Error starting server:", error);
+            }
+        });
     }
     else {
         throw Error("App is undefined");
