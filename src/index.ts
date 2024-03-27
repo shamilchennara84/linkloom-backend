@@ -9,8 +9,6 @@ const PORT = process.env.PORT || 3000;
 
 const app = createServer();
 
-
-
 mongoConnect()
   .then(() => {
     if (app) {
