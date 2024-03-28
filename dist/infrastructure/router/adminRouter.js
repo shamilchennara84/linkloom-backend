@@ -1,38 +1,18 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports["default"] = void 0;
-var _express = _interopRequireDefault(require("express"));
-var _controllers = require("../../providers/controllers");
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
-var adminRouter = _express["default"].Router();
-adminRouter.post("/login", function (req, res) {
-  return _controllers.aController.adminLogin(req, res);
-});
-adminRouter.get("/users", function (req, res) {
-  return _controllers.aController.getAllUsers(req, res);
-});
-adminRouter.get("/reports", function (req, res) {
-  return _controllers.aController.getAllPostReports(req, res);
-});
-adminRouter.patch("/reports/resolve/:reportId", function (req, res) {
-  return _controllers.aController.resolveReport(req, res);
-});
-adminRouter.patch("/users/block/:userId", function (req, res) {
-  return _controllers.aController.blockUser(req, res);
-});
-adminRouter.get("/newUserPerMonth", function (req, res) {
-  return _controllers.aController.newUserPerMonth(req, res);
-});
-adminRouter.get("/newuserperyear", function (req, res) {
-  return _controllers.aController.newUserperYear(req, res);
-});
-adminRouter.get("/postpermonth", function (req, res) {
-  return _controllers.aController.postMatrixMonth(req, res);
-});
-adminRouter.get("/admincards", function (req, res) {
-  return _controllers.aController.adminCards(req, res);
-});
-var _default = exports["default"] = adminRouter;
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const adminRouter = express_1.default.Router();
+const controllers_1 = require("../../providers/controllers");
+adminRouter.post("/login", (req, res) => controllers_1.aController.adminLogin(req, res));
+adminRouter.get("/users", (req, res) => controllers_1.aController.getAllUsers(req, res));
+adminRouter.get("/reports", (req, res) => controllers_1.aController.getAllPostReports(req, res));
+adminRouter.patch("/reports/resolve/:reportId", (req, res) => controllers_1.aController.resolveReport(req, res));
+adminRouter.patch("/users/block/:userId", (req, res) => controllers_1.aController.blockUser(req, res));
+adminRouter.get("/newUserPerMonth", (req, res) => controllers_1.aController.newUserPerMonth(req, res));
+adminRouter.get("/newuserperyear", (req, res) => controllers_1.aController.newUserperYear(req, res));
+adminRouter.get("/postpermonth", (req, res) => controllers_1.aController.postMatrixMonth(req, res));
+adminRouter.get("/admincards", (req, res) => controllers_1.aController.adminCards(req, res));
+exports.default = adminRouter;
