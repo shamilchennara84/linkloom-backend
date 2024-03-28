@@ -15,7 +15,7 @@ services:
     volumes:
       - .:/app
     working_dir: /app
-    command: npm run dev
+    command: npm run start
     depends_on:
       - mongo
 
