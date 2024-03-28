@@ -1,47 +1,45 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
 exports.createServer = void 0;
-const express_1 = __importDefault(require("express"));
-const dotenv_1 = __importDefault(require("dotenv"));
-dotenv_1.default.config();
-const cors_1 = __importDefault(require("cors"));
-const path_1 = __importDefault(require("path"));
-const adminRouter_1 = __importDefault(require("../router/adminRouter"));
-const userRouter_1 = __importDefault(require("../router/userRouter"));
-const tokenRouter_1 = __importDefault(require("../router/tokenRouter"));
-const controllers_1 = require("../../providers/controllers");
-const node_cron_1 = __importDefault(require("node-cron"));
-const createServer = () => {
-    try {
-        const app = (0, express_1.default)();
-        app.use(express_1.default.json());
-        app.use(express_1.default.urlencoded({ extended: true }));
-        app.use("/images", express_1.default.static(path_1.default.join(__dirname, "../../../images")));
-        app.use((0, cors_1.default)({
-            credentials: true,
-            origin: process.env.CORS_URI,
-        }));
-        node_cron_1.default.schedule("* * * * *", () => {
-            controllers_1.postUseCase
-                .PostRemovalJob()
-                .then((result) => {
-                console.log(result);
-            })
-                .catch((error) => {
-                console.error(error);
-            });
-        });
-        app.use("/api/admin", adminRouter_1.default);
-        app.use("/api/user", userRouter_1.default);
-        app.use("/api/token", tokenRouter_1.default);
-        return app;
-    }
-    catch (error) {
-        const err = error;
-        console.log(err.message);
-    }
+var _express = _interopRequireDefault(require("express"));
+var _dotenv = _interopRequireDefault(require("dotenv"));
+var _cors = _interopRequireDefault(require("cors"));
+var _path = _interopRequireDefault(require("path"));
+var _adminRouter = _interopRequireDefault(require("../router/adminRouter"));
+var _userRouter = _interopRequireDefault(require("../router/userRouter"));
+var _tokenRouter = _interopRequireDefault(require("../router/tokenRouter"));
+var _controllers = require("../../providers/controllers");
+var _nodeCron = _interopRequireDefault(require("node-cron"));
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { "default": obj }; }
+_dotenv["default"].config();
+var createServer = exports.createServer = function createServer() {
+  try {
+    var app = (0, _express["default"])();
+    app.use(_express["default"].json());
+    app.use(_express["default"].urlencoded({
+      extended: true
+    }));
+    app.use("/images", _express["default"]["static"](_path["default"].join(__dirname, "../../../images")));
+    app.use((0, _cors["default"])({
+      credentials: true,
+      origin: process.env.CORS_URI
+    }));
+    _nodeCron["default"].schedule("* * * * *", function () {
+      _controllers.postUseCase.PostRemovalJob().then(function (result) {
+        console.log(result);
+      })["catch"](function (error) {
+        console.error(error);
+      });
+    });
+    app.use("/api/admin", _adminRouter["default"]);
+    app.use("/api/user", _userRouter["default"]);
+    app.use("/api/token", _tokenRouter["default"]);
+    return app;
+  } catch (error) {
+    var err = error;
+    console.log(err.message);
+  }
 };
-exports.createServer = createServer;
