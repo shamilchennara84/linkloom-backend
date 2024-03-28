@@ -3,12 +3,12 @@
   "version": "1.0.0",
   "description": "backend api server for linkloom",
   "main": "index.js",
-  "scripts": {
-     "build": "babel src --out-dir dist --extensions '.ts,.tsx'",
-    "start": "tsc && node dist/index.js",
-    "dev": "nodemon --watch ./src --ext ts,json --exec \"babel src --out-dir dist --extensions '.ts,.tsx' && node dist/index.js\"",
-    "tsc": "tsc -p tsconfig.json"
-  },
+ "scripts": {
+ "build": "tsc",
+ "start": "tsc && node dist/index.js",
+ "dev": "nodemon --watch ./src --ext ts,json --exec \"tsc && node dist/index.js\"",
+ "tsc": "tsc -p tsconfig.json"
+},
   "author": "",
   "license": "ISC",
   "dependencies": {
