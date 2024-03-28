@@ -1,4 +1,4 @@
-import { get200Response, get500Response } from "../infrastructure/helperFunctions/response";
+import { get200Response, get500Response } from "../helperFunctions/response";
 import { NotificationRepository } from "../infrastructure/repositories/notificationRepository";
 import { INotification, INotificationRes, INotificationWithUser } from "../interfaces/Schema/notificationSchema";
 import { IApiResponse } from "../interfaces/common";

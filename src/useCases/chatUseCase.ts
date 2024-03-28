@@ -1,6 +1,6 @@
 // import { get200Response, get500Response } from "infrastructure/helperFunctions/response";
 import ConversationModel from "../entities/models/conversationModel";
-import { get200Response, get500Response } from "../infrastructure/helperFunctions/response";
+import { get200Response, get500Response } from "../helperFunctions/response";
 
 import { ChatRepository } from "../infrastructure/repositories/chatRepository";
 import { IChatHistoryItem, IChatReq, IConversation, IConversationListItem } from "../interfaces/Schema/chatSchema";
@@ -52,9 +52,13 @@ export class ChatUseCase {
     }
   }
 
-  async getChats(conversationId: string,page:number,limit:number): Promise<IApiResponse<IChatHistoryItem[] | null>> {
+  async getChats(
+    conversationId: string,
+    page: number,
+    limit: number
+  ): Promise<IApiResponse<IChatHistoryItem[] | null>> {
     try {
-      const chatHistory = await this.chatRepository.getChatHistory(conversationId,page,limit);
+      const chatHistory = await this.chatRepository.getChatHistory(conversationId, page, limit);
       return get200Response(chatHistory);
     } catch (error) {
       return get500Response(error as Error);

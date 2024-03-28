@@ -1,12 +1,12 @@
 {
-  "name": "linlinkloom-backend",
+  "name": "linkloom-backend",
   "version": "1.0.0",
   "description": "backend api server for linkloom",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node -r tsconfig-paths/register dist/index.js",
-    "dev": "nodemon --watch ./src --ext ts,json --exec \"tsc && node dist/index.js\"",
+     "build": "babel src --out-dir dist --extensions '.ts,.tsx'",
+    "start": "tsc && node dist/index.js",
+    "dev": "nodemon --watch ./src --ext ts,json --exec \"babel src --out-dir dist --extensions '.ts,.tsx' && node dist/index.js\"",
     "tsc": "tsc -p tsconfig.json"
   },
   "author": "",
@@ -27,6 +27,10 @@
     "socket.io": "^4.7.4"
   },
   "devDependencies": {
+    "@babel/cli": "^7.24.1",
+    "@babel/core": "^7.24.3",
+    "@babel/preset-env": "^7.24.3",
+    "@babel/preset-typescript": "^7.24.1",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
@@ -37,6 +41,7 @@
     "@types/nodemailer": "^6.4.14",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
+    "babel-plugin-module-resolver": "^5.0.0",
     "concurrently": "^8.2.2",
     "eslint": "^8.56.0",
     "nodemon": "^3.0.3",

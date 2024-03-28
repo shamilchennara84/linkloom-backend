@@ -1,5 +1,5 @@
-import { STATUS_CODES, ERR_MESSAGE } from "../../constants/httpStatusCodes";
-import { AllResTypes, IApiResponse } from "../../interfaces/common";
+import { STATUS_CODES, ERR_MESSAGE } from "../constants/httpStatusCodes";
+import { AllResTypes, IApiResponse } from "../interfaces/common";
 
 export const get200Response = <T extends AllResTypes>(data: T): IApiResponse<T> => {
   return {

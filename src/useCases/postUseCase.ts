@@ -1,11 +1,11 @@
-import { get200Response, get500Response } from "../infrastructure/helperFunctions/response";
+import { get200Response, get500Response } from "../helperFunctions/response";
 import { PostRepository } from "../infrastructure/repositories/postRepository";
 import { IPostReq, IPostRes, IPostUserRes } from "../interfaces/Schema/postSchema";
 import { IApiResponse, ID } from "../interfaces/common";
 import { ILikeCountRes } from "../interfaces/Schema/likeSchema";
 import { ICommentSchema } from "../interfaces/Schema/commentSchema";
 import { ITagRes } from "../interfaces/Schema/tagSchema";
-import {  IReportRes } from "../interfaces/Schema/reportSchema";
+import { IReportRes } from "../interfaces/Schema/reportSchema";
 
 export class PostUseCase {
   constructor(private readonly postRepository: PostRepository) {}
@@ -151,7 +151,7 @@ export class PostUseCase {
   async PostRemovalJob() {
     try {
       console.log("function called");
-      this.postRepository.checkAndMarkPostsAsRemoved()
+      this.postRepository.checkAndMarkPostsAsRemoved();
       console.log("Scheduled post removal job successfully.");
       return { success: true, message: "Scheduled post removal job successfully." };
     } catch (error) {

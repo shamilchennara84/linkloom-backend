@@ -4,7 +4,7 @@ import { log } from "console";
 import * as fs from "fs";
 import { MAX_OTP_TRY, OTP_TIMER } from "../constants/constants";
 import { STATUS_CODES } from "../constants/httpStatusCodes";
-import { get200Response, get500Response, getErrorResponse } from "../infrastructure/helperFunctions/response";
+import { get200Response, get500Response, getErrorResponse } from "../helperFunctions/response";
 import { TempUserRepository } from "../infrastructure/repositories/tempUserRepository";
 import { UserRepository } from "../infrastructure/repositories/userRepository";
 import { ITempUserReq, ITempUserRes } from "../interfaces/Schema/tempUserSchema";
