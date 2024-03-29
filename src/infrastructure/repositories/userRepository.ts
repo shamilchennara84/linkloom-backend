@@ -70,8 +70,23 @@ export class UserRepository implements IUserRepo {
             $unwind: "$postDetails",
           },
           {
+            $lookup: {
+              from: "users",
+              localField: "reporterId",
+              foreignField: "_id",
+              as: "reporterDetails",
+            },
+          },
+          {
+            $unwind: "$reporterDetails",
+          },
+          {
             $addFields: {
               isResolved: "$postDetails.isRemoved",
+              postImg: "$postDetails.postURL",
+              caption: "$postDetails.caption",
+              username: "$reporterDetails.username",
+              profileImg: "$reporterDetails.profilePic",
             },
           },
           {
@@ -83,6 +98,7 @@ export class UserRepository implements IUserRepo {
           {
             $project: {
               postDetails: 0,
+              reporterDetails:0
             },
           },
         ])
