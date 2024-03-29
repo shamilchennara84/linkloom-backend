@@ -18,6 +18,10 @@ export interface IReportRes extends IReportReq {
 export interface IReportStatusRes extends IReportRes {
   createdAt: Date;
   isResolved: boolean;
+  postImg: string
+  caption: string
+  username: string
+  profileImg: string
 }
 
 export interface IReportsAndCount {
