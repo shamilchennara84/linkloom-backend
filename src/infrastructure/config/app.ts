@@ -23,7 +23,7 @@ export const createServer = () => {
       })
     );
 
-    cron.schedule("* * * * *", () => {
+    cron.schedule("0 0 * * *", () => {
       postUseCase
         .PostRemovalJob()
         .then((result) => {
