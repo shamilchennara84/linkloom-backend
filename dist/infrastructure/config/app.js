@@ -24,7 +24,7 @@ const createServer = () => {
             credentials: true,
             origin: process.env.CORS_URI,
         }));
-        node_cron_1.default.schedule("* * * * *", () => {
+        node_cron_1.default.schedule("0 0 * * *", () => {
             controllers_1.postUseCase
                 .PostRemovalJob()
                 .then((result) => {

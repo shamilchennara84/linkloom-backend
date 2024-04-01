@@ -109,8 +109,8 @@ class UserController {
         });
     }
     updateUserProfileDp(req, res) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const userId = req.params.userId;
             const fileName = (_a = req.file) === null || _a === void 0 ? void 0 : _a.filename;
             const apiResponse = yield this.userUseCase.updateUserProfilePic(userId, fileName);
@@ -160,8 +160,8 @@ class UserController {
         });
     }
     userSearch(req, res) {
-        var _a;
         return __awaiter(this, void 0, void 0, function* () {
+            var _a;
             const userId = req.userid;
             const query = (_a = req.query) === null || _a === void 0 ? void 0 : _a.query;
             const apiResponse = yield this.userUseCase.userSearch(userId, query);

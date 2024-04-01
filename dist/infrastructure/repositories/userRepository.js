@@ -118,8 +118,8 @@ class UserRepository {
             }
         });
     }
-    findUserCount(searchQuery = "") {
-        return __awaiter(this, void 0, void 0, function* () {
+    findUserCount() {
+        return __awaiter(this, arguments, void 0, function* (searchQuery = "") {
             const regex = new RegExp(searchQuery, "i");
             return yield userModel_1.default
                 .find({
@@ -129,8 +129,8 @@ class UserRepository {
                 .exec();
         });
     }
-    findReportCount(searchQuery = " ") {
-        return __awaiter(this, void 0, void 0, function* () {
+    findReportCount() {
+        return __awaiter(this, arguments, void 0, function* (searchQuery = " ") {
             const regexString = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"); // Escape special characters
             const regexOptions = "i"; // Case-insensitive
             return yield reportModel_1.default

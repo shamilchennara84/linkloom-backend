@@ -87,7 +87,9 @@ web_modules/
 .next
 out
 
-
+# Nuxt.js build / generate output
+.nuxt
+dist
 
 # Gatsby files
 .cache/
@@ -95,7 +97,24 @@ out
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
 
+# vuepress build output
+.vuepress/dist
 
+# vuepress v2.x temp and cache directory
+.temp
+.cache
+
+# Docusaurus cache and generated files
+.docusaurus
+
+# Serverless directories
+.serverless/
+
+# FuseBox cache
+.fusebox/
+
+# DynamoDB Local files
+.dynamodb/
 
 # TernJS port file
 .tern-port
@@ -103,3 +122,9 @@ out
 # Stores VSCode versions used for testing VSCode extensions
 .vscode-test
 
+# yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*

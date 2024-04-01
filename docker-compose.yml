@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+  node:
+    build:
+      context: ./
+      dockerfile: ./.docker/node.Dockerfile
+    environment:
+      - MONGODB_URI=mongodb+srv://shamilchennara84:jky40TFnibZ50gjT@cluster0.dsvgq5l.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - JWT_SECRET_KEY=jwtsecretabc
+      - PORT=3000
+      - CORS_URI=https://linkloomfront.vercel.app/
+      - EMAIL=linkloom789@gmail.com
+      - PASSWORD=tuhkxtvpynnwmpdu
+      - DOCKER_NGINX_NODE_HOST=fun-with-docker-node
+    # depends_on:
+    #   - mongo
+    restart: unless-stopped
+    deploy:
+      mode: replicated
+      replicas: 2
+
+  # mongo:
+  #   image: mongo:latest
+  #   restart: always
+  #   environment:
+  #     - MONGO_INITDB_ROOT_USERNAME=root
+  #     - MONGO_INITDB_ROOT_PASSWORD=example
+  #   volumes:
+  #     - mongo-data:/data/db
+
+  nginx:
+    build:
+      context: ./
+      dockerfile: ./.docker/nginx.Dockerfile
+    restart: unless-stopped  
+    volumes:
+      - nginx-config:/etc/nginx
+    ports:
+      - "${DOCKER_NGINX_OUT_PORT:-3080}:80"
+    depends_on:
+      - node
+
+volumes:
+  # mongo-data:
+  nginx-config:
