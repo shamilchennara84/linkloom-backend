@@ -37,7 +37,7 @@ services:
     volumes:
       - nginx-config:/etc/nginx
     ports:
-      - "${DOCKER_NGINX_OUT_PORT:-3080}:80"
+      - "${DOCKER_NGINX_OUT_PORT:-80}:80"
     depends_on:
       - node
 
