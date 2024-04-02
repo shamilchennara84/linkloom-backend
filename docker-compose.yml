@@ -10,7 +10,7 @@ services:
       - MONGODB_URI=mongodb+srv://shamilchennara84:jky40TFnibZ50gjT@cluster0.dsvgq5l.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
       - JWT_SECRET_KEY=jwtsecretabc
       - PORT=3000
-      - CORS_URI=https://linkloomfront.vercel.app/
+      - CORS_URI=https://linkloomfront.vercel.app
       - EMAIL=linkloom789@gmail.com
       - PASSWORD=tuhkxtvpynnwmpdu
     ports:
