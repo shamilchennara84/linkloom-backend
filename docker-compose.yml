@@ -13,21 +13,10 @@ services:
       - EMAIL=linkloom789@gmail.com
       - PASSWORD=tuhkxtvpynnwmpdu
       - DOCKER_NGINX_NODE_HOST=fun-with-docker-node
-    # depends_on:
-    #   - mongo
     restart: unless-stopped
     deploy:
       mode: replicated
       replicas: 2
-
-  # mongo:
-  #   image: mongo:latest
-  #   restart: always
-  #   environment:
-  #     - MONGO_INITDB_ROOT_USERNAME=root
-  #     - MONGO_INITDB_ROOT_PASSWORD=example
-  #   volumes:
-  #     - mongo-data:/data/db
 
   nginx:
     build:
@@ -35,22 +24,12 @@ services:
       dockerfile: ./.docker/nginx.Dockerfile
     restart: unless-stopped  
     volumes:
-      - ./path/to/certbot/certs:/etc/letsencrypt
-      - ./path/to/certbot/webroot:/var/www/certbot
       - nginx-config:/etc/nginx
     ports:
       - "80:80"
       - "443:443"
     depends_on:
       - node
-      - certbot
-
-  certbot:
-    image: certbot/certbot:latest
-    volumes:
-      - ./path/to/certbot/certs:/etc/letsencrypt
-      - ./path/to/certbot/webroot:/var/www/certbot
-    command: certonly --webroot --webroot-path=/var/www/certbot --email shamilchennara84@gmail.com --agree-tos --no-eff-email --force-renewal -d linkloom.fun
 
 volumes:
   # mongo-data:
