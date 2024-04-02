@@ -32,5 +32,4 @@ services:
       - node
 
 volumes:
-  # mongo-data:
   nginx-config:
