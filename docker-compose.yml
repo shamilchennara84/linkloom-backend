@@ -1,3 +1,4 @@
+
 version: '3.8'
 
 services:
@@ -12,25 +13,6 @@ services:
       - CORS_URI=https://linkloomfront.vercel.app/
       - EMAIL=linkloom789@gmail.com
       - PASSWORD=tuhkxtvpynnwmpdu
-      - DOCKER_NGINX_NODE_HOST=fun-with-docker-node
-    restart: unless-stopped
-    deploy:
-      mode: replicated
-      replicas: 2
-
-  nginx:
-    build:
-      context: ./
-      dockerfile: ./.docker/nginx.Dockerfile
-    restart: unless-stopped  
-    volumes:
-      - nginx-config:/etc/nginx
     ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - node
-    entrypoint: /bin/sh -c "apk update && apk add certbot certbot-nginx && certbot --nginx -d linkloom.fun --agree-tos --email shamilchennara84@gmail.com --non-interactive && nginx -g 'daemon off;'"
-
-volumes:
-  nginx-config:
+      - "3000:3000"
+    restart: unless-stopped
