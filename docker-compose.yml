@@ -13,9 +13,11 @@ services:
       - CORS_URI=https://linkloomfront.vercel.app
       - EMAIL=linkloom789@gmail.com
       - PASSWORD=tuhkxtvpynnwmpdu
+    volumes:
+      images:  
     ports:
       - "3000:3000"
     restart: unless-stopped
     volumes:
-      - ./images:/home/node/app/images
+      - images:/home/node/app/images
       
