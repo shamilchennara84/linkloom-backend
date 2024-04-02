@@ -14,10 +14,10 @@ services:
       - EMAIL=linkloom789@gmail.com
       - PASSWORD=tuhkxtvpynnwmpdu
     volumes:
-      images:  
+      - images:/home/node/app/images
     ports:
       - "3000:3000"
     restart: unless-stopped
   volumes:
-      - images:/home/node/app/images
+    images:
       
