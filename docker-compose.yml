@@ -30,6 +30,7 @@ services:
       - "443:443"
     depends_on:
       - node
+    entrypoint: /bin/sh -c "apt-get update && apt-get install -y certbot python3-certbot-nginx && certbot --nginx -d yourdomain.com && nginx -g 'daemon off;'"  
 
 volumes:
   nginx-config:
