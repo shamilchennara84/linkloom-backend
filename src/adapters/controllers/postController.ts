@@ -4,13 +4,14 @@ import { PostUseCase } from "../../useCases/postUseCase";
 import { Request, Response } from "express";
 import { ICommentSchema } from "../../interfaces/Schema/commentSchema";
 import { RequestWithUser } from "../../infrastructure/middleware/userAuth";
+import path from "path";
 
 export class PostController {
   constructor(private postUserCase: PostUseCase) {}
 
   async savePost(req: Request, res: Response) {
     try {
-      const postURL = req.file ? req.file.filename : ""; // multer stores the file path in req.file
+      const postURL = req.file ? path.basename(req.file.path) : "";
 
       const { userId, caption, location } = req.body;
       // Create an object with the post data
