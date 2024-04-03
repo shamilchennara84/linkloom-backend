@@ -10,7 +10,7 @@ export class PostController {
 
   async savePost(req: Request, res: Response) {
     try {
-      const postURL = req.file ? req.file.path : ""; // multer stores the file path in req.file
+      const postURL = req.file ? req.file.filename : ""; // multer stores the file path in req.file
 
       const { userId, caption, location } = req.body;
       // Create an object with the post data
