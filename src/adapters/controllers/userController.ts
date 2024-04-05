@@ -158,6 +158,7 @@ export class UserController {
   }
 
   async userSearch(req: RequestWithUser, res: Response) {
+    console.log("userSearch controller");
     const userId = req.userid as ID;
     const query = req.query?.query as string;
     const apiResponse = await this.userUseCase.userSearch(userId, query);

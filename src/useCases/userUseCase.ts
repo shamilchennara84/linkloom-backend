@@ -285,6 +285,7 @@ export class UserUseCase {
 
   async userSearch(userId: ID, query: string): Promise<IApiResponse<IUserSearchItem[] | null>> {
     try {
+        console.log("userSearch usecase");
       const usersData = await this.userRepository.searchUsers(userId, query);
       return get200Response(usersData);
     } catch (error) {

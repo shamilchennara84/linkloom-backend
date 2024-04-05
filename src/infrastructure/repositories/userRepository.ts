@@ -98,7 +98,7 @@ export class UserRepository implements IUserRepo {
           {
             $project: {
               postDetails: 0,
-              reporterDetails:0
+              reporterDetails: 0,
             },
           },
         ])
@@ -323,90 +323,92 @@ export class UserRepository implements IUserRepo {
   async searchUsers(userId: ID, query: string): Promise<IUserSearchItem[] | null> {
     const id = new Types.ObjectId(userId as unknown as string);
     const regex = new RegExp(query, "i");
-  const result = await userModel.aggregate([
-    { $match: { $or: [{ username: { $regex: regex } }, { fullname: { $regex: regex } }], _id: { $ne: id } } },
-    {
-      $lookup: {
-        from: "followers",
-        let: { userId: "$_id" },
-        pipeline: [{ $match: { $expr: { $eq: ["$followingUserId", "$$userId"] } } }, { $count: "followers" }],
-        as: "followersCount",
+    console.log("userSearch repo", id, regex);
+    const result = await userModel.aggregate([
+      { $match: { $or: [{ username: { $regex: regex } }, { fullname: { $regex: regex } }], _id: { $ne: id } } },
+      {
+        $lookup: {
+          from: "followers",
+          let: { userId: "$_id" },
+          pipeline: [{ $match: { $expr: { $eq: ["$followingUserId", "$$userId"] } } }, { $count: "followers" }],
+          as: "followersCount",
+        },
       },
-    },
-    { $unwind: "$followersCount" }, // Unwind the followersCount array
-    {
-      $addFields: {
-        followers: "$followersCount.followers", // Directly use the followers count
+      { $unwind: { path: "$followersCount", preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          followers: "$followersCount.followers", // Directly use the followers count
+        },
       },
-    },
-    {
-      $lookup: {
-        from: "followers",
-        let: { userId: id },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [{ $eq: ["$followerUserId", "$$userId"] }, { $eq: ["$followingUserId", "$_id"] }],
+      {
+        $lookup: {
+          from: "followers",
+          let: { userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$followerUserId", id] }, { $eq: ["$followingUserId", "$$userId"] }],
+                },
               },
             },
-          },
-          { $count: "isFollowing" },
-        ],
-        as: "isFollowing",
+            { $count: "isFollowing" },
+          ],
+          as: "isFollowing",
+        },
       },
-    },
-    { $unwind: "$isFollowing" }, // Unwind the isFollowing array
-    {
-      $addFields: {
-        isFollowing: "$isFollowing.isFollowing", // Directly use the isFollowing count
+      { $unwind: { path: "$isFollowing", preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          isFollowing: { $gt: ["$isFollowing.isFollowing", 0] }, // Convert count to boolean
+        },
       },
-    },
-    // Calculate mutual connections
-    {
-      $lookup: {
-        from: "followers",
-        let: { userId: "$_id" },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $and: [{ $eq: ["$followerUserId", id] }, { $eq: ["$followingUserId", "$$userId"] }],
+      // Calculate mutual connections
+      {
+        $lookup: {
+          from: "followers",
+          let: { userId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [{ $eq: ["$followerUserId", id] }, { $eq: ["$followingUserId", "$$userId"] }],
+                },
               },
             },
-          },
-          { $count: "mutualConnections" },
-        ],
-        as: "mutualConnections",
+            { $count: "mutualConnections" },
+          ],
+          as: "mutualConnections",
+        },
       },
-    },
-    { $unwind: "$mutualConnections" }, // Unwind the mutualConnections array
-    {
-      $addFields: {
-        mutualConnections: "$mutualConnections.mutualConnections", // Directly use the mutualConnections count
+      // { $unwind: "$mutualConnections" }, // Unwind the mutualConnections array
+      { $unwind: { path: "$mutualConnections", preserveNullAndEmptyArrays: true } },
+      {
+        $addFields: {
+          mutualConnections: "$mutualConnections.mutualConnections", // Directly use the mutualConnections count
+        },
       },
-    },
-    // Sort by mutual connections
-    {
-      $sort: {
-        mutualConnections: -1, // Sort in descending order
+      // Sort by mutual connections
+      {
+        $sort: {
+          mutualConnections: -1, // Sort in descending order
+        },
       },
-    },
-    {
-      $project: {
-        _id: 1,
-        username: 1,
-        fullname: 1, // Corrected the typo from "userfname" to "fullname"
-        profilePic: 1,
-        followers: 1,
-        isFollowing: 1,
-        mutualConnections: 1, // Include mutualConnections in the final projection
+      {
+        $project: {
+          _id: 1,
+          username: 1,
+          fullname: 1, // Corrected the typo from "userfname" to "fullname"
+          profilePic: 1,
+          followers: 1,
+          isFollowing: 1,
+          mutualConnections: 1, // Include mutualConnections in the final projection
+        },
       },
-    },
-  ]);
-
+    ]);
+    console.log(result, "result");
     result.forEach((val) => {
-      console.log(val);
+      console.log(val, "result");
     });
     return result;
   }
